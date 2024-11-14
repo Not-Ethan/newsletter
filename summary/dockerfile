@@ -1,0 +1,23 @@
+# Use Miniconda as the base image
+FROM continuumio/miniconda3
+
+# Set the working directory inside the container
+WORKDIR /summary
+
+# Copy the environment.yml file to the container
+COPY environment.yml .
+
+# Install the Conda environment from the environment.yml file
+RUN conda env create -f environment.yml
+
+# Activate the Conda environment for future RUN commands
+SHELL ["conda", "run", "-n", "myenv", "/bin/bash", "-c"]
+
+# Copy the rest of the application code
+COPY . .
+
+# Expose a port if needed (e.g., for a web service like Flask)
+EXPOSE 5000
+
+# Define the default command to run the application
+CMD ["conda", "run", "-n", "myenv", "python", "summary.py"]
