@@ -1,6 +1,7 @@
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 from dotenv import load_dotenv
 import os
+import re
 load_dotenv("secrets.env")
 ANTHROPIC_KEY = os.getenv("ANTHROPIC_KEY")
 
@@ -22,4 +23,4 @@ Guest: "Future projects like the Vera Rubin Observatory are expected to provide 
 tok_input = tokenizer.batch_encode_plus([summary], return_tensors="pt", padding=True)
 claims = model.generate(**tok_input)
 claims = tokenizer.batch_decode(claims, skip_special_tokens=True)
-print(claims[0].split(r'[.!?]'))
+print(re.split(r'(?<=[.!?]) +',claims[0]))
