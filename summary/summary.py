@@ -20,6 +20,11 @@ def clean_markdown(response_text):
         response_text += "]"
     return response_text.strip()
 
+def validate_json_syntax(raw_output):
+    if ",]" in raw_output or ",}" in raw_output:
+        raw_output = raw_output.replace(",]", "]").replace(",}", "}")
+    return raw_output
+
 def clean_model_output(response_text):
     response_text = clean_markdown(response_text)
     return response_text
@@ -29,19 +34,26 @@ def extract_key_points(text):
     prompt = (
     "Extract key points from the following podcast transcript. For each key point, provide a detailed and engaging summary that follows these guidelines:\n\n"
     
-    "1. **Engaging Hook**: Begin each summary with a hook that immediately captures the reader's attention. "
+    "1. **Engaging Hook**: Begin each summary with a hook that immediately captures the reader's attention."
     "The hook should end with the special delimiter character '|'. This delimiter must mark where the hook ends and the introduction begins, and it should appear only once in the summary.\n\n"
+    "The hook should be a rhetorical question or a thought-provoking statement or joke that entices the reader to continue reading."
     
     "2. **Introduction of Key Point**: After the hook and delimiter, provide a brief introduction to the topic, explaining the main idea in a clear and concise manner. This should naturally follow the hook, setting up the core information.\n\n"
     
-    "3. **'How Does This Affect You?' Sub-Hook**: Use a secondary question like 'How does this affect you?' to transition into discussing the implications. This question should serve as a 'sub-hook,' introducing the second part of the summary focused on the impact of the topic.\n\n"
+    "3. **Creative and Varied Transitions**: Use a variety of transitions to introduce the implications of the topic. Avoid repeating phrases like across summaries. Instead, consider alternatives such as:\n"
+    "- 'What does this mean for your everyday life?'\n"
+    "- 'Why should you care about this development?'\n"
+    "- 'Here’s why this matters right now.'\n"
+    "- 'Think about how this could change things for you.'\n"
+    "- 'The real question is: what comes next?'\n"
+    "Ensure creativity and diversity in transitions to make the summaries more engaging.\n\n"
     
-    "4. **Implications and Broader Significance**: After the sub-hook, explain the implications of the topic, including why it matters to the reader and how it impacts the world. Emphasize the practical or real-world effects and provide insights that make the information meaningful.\n\n"
+    "4. **Implications and Broader Significance**: After the transition, explain the implications of the topic, including why it matters to the reader and how it impacts the world. Emphasize the practical or real-world effects and provide insights that make the information meaningful.\n\n"
     
     "5. **Grouping by Subject**: Organize points by subjects. Each subject should have its own group in the JSON output, helping to clearly categorize related points and provide a logical structure for the content. Try to minimize the number of groups.\n\n"
     
     "Output the result strictly as raw JSON, using the following structure:\n"
-    "[{\"subject\":\"A string representing the main topic or subject of the key points, such as 'Interest Rates' or 'Climate Change'.\",\"points\":[{\"point\":\"A string representing the main idea or title of the key point, providing a brief description.\",\"summary\":\"A detailed explanation of the key point, following the structured format: a rhetorical question hook ending with '|', an introduction to the topic, a sub-hook ('How does this affect you?'), and an explanation of the implications and broader significance.\"}]}]\n\n"
+    "[{\"subject\":\"A string representing the main topic or subject of the key points, such as 'Interest Rates' or 'Climate Change'.\",\"points\":[{\"point\":\"A string representing the main idea or title of the key point, providing a brief description.\",\"summary\":\"A detailed explanation of the key point, following the structured format: a rhetorical question hook ending with '|', an introduction to the topic, a creative and varied transition, and an explanation of the implications and broader significance.\"}]}]\n\n"
     
     "### JSON Output Guidelines:\n"
     "- The JSON should contain an array of objects, where each object represents a subject category with a 'subject' key (the topic name) and a 'points' key (an array of key points).\n"
@@ -50,11 +62,13 @@ def extract_key_points(text):
     "    - 'summary': a detailed explanation that follows the structured format specified above.\n\n"
     
     "The summaries should be presented as informative standalone explanations, without referring back to the podcast or assuming the reader has listened to it. "
-    "The hook must always end with the delimiter '|', and this character should not appear elsewhere in the summary. If needed, rephrase to avoid using '|' unintentionally.\n\n"
+    "The hook must always end with the delimiter '|', and this character should not appear elsewhere in the summary.\n\n"
     
     "Output only valid JSON without any additional text, explanations, or commentary.\n\n"
     "DO NOT FORGET OPENING AND CLOSING SQUARE BRACKETS FOR THE JSON ARRAY. YOUR OUTPUT SHOULD END WITH A CLOSING SQUARE BRACKET.\n\n"
-    
+    "Do not include trailing commas."
+    "Ensure JSON is syntactically valid and can be parsed directly."
+
     "Text to summarize:\n" + text
     )
     completion = client.chat.completions.create(
@@ -72,6 +86,7 @@ def extract_key_points(text):
     )
     response_text = completion.choices[0].message.content.strip()
     cleaned_json = clean_model_output(response_text)
+    cleaned_json = validate_json_syntax(cleaned_json)
     # Attempt to parse the JSON directly
     try:
         parsed_output = json.loads(cleaned_json)
@@ -81,7 +96,6 @@ def extract_key_points(text):
         print("Raw output:", response_text)
         return None
 def clean_delimiter(data):
-    print(data)
     for subject in data:
         for point in subject["points"]:
             # Check for multiple delimiters
@@ -93,28 +107,16 @@ def clean_delimiter(data):
 
 # Example podcast script
 podcast_script = """
-Host: "Welcome to Economics Uncovered, where we break down the complex world of economics and explore how global events shape our financial future. I’m your host, Rachel Davidson, and today we have a fascinating mix of current economic events and deep economic concepts. With me is Dr. Mark Johnson, a leading economist specializing in international trade and economic policy. Mark, welcome to the show!"
-Mark: "Thanks for having me, Rachel. Excited to dive into today’s topics."
-Host: "Absolutely. Let’s start with some big news. The recent surge in inflation rates across the globe is causing a lot of concern. In the U.S., inflation has hit a 40-year high. But it’s not just the U.S.; we’re seeing price increases in Europe and parts of Asia as well. Mark, what’s driving this rise in inflation, and what does it mean for the average consumer?"
-Mark: "Well, Rachel, there are several factors at play here. First, we’ve seen a post-pandemic supply chain disruption that’s still affecting global trade. Companies are struggling to meet demand, and that’s leading to higher prices. Second, the war in Eastern Europe has exacerbated energy prices, particularly natural gas and oil. This affects everything from transportation costs to heating bills, and it drives up the price of goods across the board."
-Host: "It’s interesting you bring up the war in Eastern Europe. Economic sanctions on Russia have undoubtedly disrupted energy markets, but they also have broader implications, don’t they?"
-Mark: "Exactly. The sanctions on Russia have not only reduced the supply of oil and gas but have also caused a ripple effect in global commodity markets. Countries that were heavily dependent on Russian exports are scrambling to find alternative sources, which creates competition and drives up prices globally. But we’re also seeing a shift in global trade patterns. For instance, countries like India and China have stepped in to buy discounted Russian energy, which changes the dynamics of global trade."
-Host: "That’s a great point. It’s not just about energy, though. You’ve written before about how inflation affects different sectors of the economy differently. Can you elaborate on that?"
-Mark: "Sure. Inflation isn’t just about rising prices for consumers; it’s also about shifting economic behavior. For instance, in the housing market, inflation is pushing mortgage rates higher, which is making it more difficult for potential homeowners to afford a home. At the same time, some sectors like technology and renewable energy have seen increased investment because people are looking for ways to hedge against inflation by investing in assets that tend to appreciate over time."
-Host: "That’s an interesting dynamic. On the other hand, you have central banks, which are trying to combat inflation by raising interest rates, right?"
-Mark: "Yes, central banks, particularly the Federal Reserve, have been raising interest rates in an effort to cool the economy and curb inflation. The theory is that by making borrowing more expensive, consumer spending will slow down, and demand for goods will decrease, which will help bring prices down. But there’s a risk to this, especially in a global economy that’s already recovering from the pandemic. If rates rise too quickly, it could trigger a recession."
-Host: "A recession—now that’s a topic that brings a lot of uncertainty. Let’s talk about economic theory for a moment. There’s been a growing debate about whether we’re moving from a market-driven economy to a more interventionist one. What are your thoughts on this shift?"
-Mark: "We’re definitely seeing more government intervention, and it's been particularly evident during the pandemic. The U.S. passed trillions in fiscal stimulus to support businesses and consumers. In Europe, countries have implemented similar support packages. The global trend seems to be towards a model where governments are more involved in managing the economy, especially during times of crisis. Some economists argue that this is a necessary step to combat economic inequality and market failures, but others worry that too much intervention can lead to inefficiencies and long-term stagnation."
-Host: "That’s a fundamental debate. So, if we look at broader economic theory, we’ve also seen a resurgence of protectionism. Countries are putting up trade barriers, particularly in the wake of COVID and the war. Is this a dangerous trend for global economics?"
-Mark: "Protectionism can be a double-edged sword. On one hand, countries are looking to protect domestic industries and jobs, particularly in manufacturing. But on the other hand, protectionism can lead to higher costs for consumers and reduced economic efficiency. The global supply chain has been built on the idea of comparative advantage, where countries specialize in what they do best. If countries start pulling away from this model, it could disrupt global trade and lead to inefficiencies that hurt everyone in the long run."
-Host: "So, you’re suggesting that global cooperation is still essential, despite the challenges?"
-Mark: "Absolutely. The interconnectedness of the global economy means that cooperation is crucial, not just for trade, but also for tackling global issues like climate change. The recent push for a global carbon tax and international climate agreements shows that despite geopolitical tensions, there’s a recognition that some challenges are too big for any one country to solve alone."
-Host: "Speaking of the environment, climate change is not just an environmental issue—it’s becoming a major economic issue too. From carbon pricing to green energy investments, the economy is shifting towards sustainability. How do you see this impacting the global economy in the next decade?"
-Mark: "It’s a huge shift. The transition to a greener economy is going to require massive investments in renewable energy, electric vehicles, and sustainable infrastructure. This shift will create new economic opportunities, but it will also require economies to adapt. For countries that are heavily reliant on fossil fuels, the transition might be painful, especially in the short term. But in the long run, the green economy is poised to drive growth and create millions of jobs, particularly in sectors like clean energy and environmental services."
-Host: "We’ve touched on so many important topics today, Mark. From inflation to climate change, to the changing role of governments in the economy, it’s clear that the next decade will be pivotal. Any final thoughts?"
-Mark: "The next decade will be critical, Rachel. We have a chance to shape the future of the global economy through innovation, collaboration, and smart policy. But it requires us to think beyond short-term profits and focus on long-term sustainability—both for our planet and for our economies."
-Host: "Thank you so much, Mark, for your insights today. And thank you to all our listeners for tuning in to Economics Uncovered. Stay tuned as we continue to explore the world of economics and its impact on our lives. Until next time!"
-"""  # Add the full transcript here
+Alright, welcome back to the show, everyone! So, today, we’ve got a lot to cover. Uh, let’s dive right in with, uh, something that’s on everyone’s minds these days: artificial intelligence. You know, AI is, like, evolving so fast, it’s actually kinda hard to keep up. Um, just last week, we saw another breakthrough in generative AI. This one, uh, allows you to create videos from just a simple text prompt. Can you imagine? Like, you type ‘a cat playing the piano in space,’ and boom—there it is. But, uh, with that comes questions about copyright and misuse. Uh, where’s the line between creativity and stealing content? Some, uh, experts argue we need stricter regulations, but honestly, who’s gonna enforce those?
+Okay, shifting gears a little here, um, let’s talk about mental health. You know, mental health’s been such a, like, taboo topic for so long, but I feel like, especially after COVID, more people are finally talking about it. Uh, did you know that anxiety levels have gone up by, like, 25% globally since the pandemic started? That’s...that’s massive. And, you know, the systems we have in place, they just—they’re just not enough. Therapy’s expensive, waitlists are ridiculous, and, uh, not everyone even knows how to ask for help. I mean, how do we even begin to tackle something so huge? Maybe tech could help? Like, I read somewhere about these new mental health apps that, uh, use AI chatbots to provide support. But, uh, can a chatbot replace a human therapist? I don’t know, but I guess it’s a step in the right direction.
+Alright, so now onto a completely different topic—climate change. Uh, yeah, I know, you’ve probably heard this a million times, but, like, we’re running out of time to act. Did you see that report, uh, from the IPCC last month? They said we’re, like, really close to crossing some of the critical tipping points. Like, you know, the Arctic ice? Yeah, it’s melting way faster than we thought. Uh, and it’s not just about the polar bears—it’s, uh, rising sea levels, extreme weather, and all that stuff. But here’s the thing—some scientists are actually working on, uh, geoengineering projects to, like, reflect sunlight and cool the Earth. Uh, that’s, like, wild, right? But is it safe? What if it has unintended consequences? It’s like playing God or something.
+Um, speaking of big ideas, how about space exploration? Like, SpaceX just launched their new Mars-bound rocket prototype last week. Isn’t that insane? Uh, the plan is to send humans to Mars by, like, 2030. But, uh, here’s my question—why are we so focused on Mars when, you know, we’ve got so many problems here on Earth? Like, billions of dollars are being spent on rockets while people here can’t even afford healthcare or clean water. I mean, yeah, sure, exploring space is cool, but, uh, is it really what we should prioritize right now?
+Anyway, um, back to technology for a sec, because I forgot to mention something earlier. Uh, so, there’s this big debate about AI replacing jobs. Like, I heard that in, uh, the next ten years, automation could, like, replace 40% of jobs in some sectors. Uh, things like truck driving, customer service, and even some parts of medicine. But, uh, here’s the thing—what happens to all those workers? Are governments even prepared for this shift? Like, are they gonna provide universal basic income or, you know, just, uh, let people fend for themselves? I don’t know—it’s scary to think about.
+Oh, oh, before I forget, uh, there’s this cool thing I read about in, uh, renewable energy. Um, so, you know how everyone’s been talking about solar panels and wind turbines? Well, apparently, there’s this new tech that lets you, uh, store renewable energy in giant batteries. Like, these batteries are as big as a shipping container. Isn’t that cool? It could solve one of the biggest problems with renewables, which is, like, storing energy for when the sun’s not shining or the wind’s not blowing. But, uh, the problem is they’re super expensive right now. So, the question is, uh, how do we scale this tech and make it affordable for everyone?
+And, um, speaking of affordability, let’s get back to healthcare for a second. Did you know that in the U.S., uh, one in five people can’t afford their prescription medications? Like, how is that even possible in one of the richest countries in the world? Uh, there’s this new push for, like, price caps on drugs, but, uh, pharmaceutical companies are fighting it tooth and nail. I mean, who’s gonna win that battle? It’s, uh, it’s hard to say, but, uh, people are suffering while these companies rake in billions.
+Okay, one last thing, uh, before we wrap up today. Let’s talk about education. So, there’s been this, uh, huge debate about whether college is even worth it anymore. Like, student loan debt is at, uh, record levels—over $1.7 trillion in the U.S. alone. And, uh, with the rise of online learning platforms, like, some people are wondering if traditional degrees are becoming obsolete. But here’s the thing—how do employers view online education? Are they gonna treat it the same as a degree from, uh, a top university? I don’t know, but, uh, it’s something to think about.
+Alright, uh, that’s all we’ve got for today. Thanks for tuning in, and, uh, we’ll see you next time!
+"""
 
 # Extract key points
 key_points_json = extract_key_points(podcast_script)
