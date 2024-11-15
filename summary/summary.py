@@ -10,7 +10,7 @@ API_KEY = os.getenv("OPENAI_API_KEY")
 
 client = OpenAI(api_key=API_KEY)
 
-def clean_model_output(response_text):
+def clean_markdown(response_text):
     # Check if the response starts and ends with Markdown-style JSON fences
     if response_text.startswith("```json") and response_text.endswith("```"):
         # Remove the enclosing backticks and json label
@@ -19,6 +19,10 @@ def clean_model_output(response_text):
         # Add closing square bracket to ensure valid JSON
         response_text += "]"
     return response_text.strip()
+
+def clean_model_output(response_text):
+    response_text = clean_markdown(response_text)
+    return response_text
 
 def extract_key_points(text):
 
@@ -76,6 +80,16 @@ def extract_key_points(text):
         print("Failed to parse JSON:", e)
         print("Raw output:", response_text)
         return None
+def clean_delimiter(data):
+    print(data)
+    for subject in data:
+        for point in subject["points"]:
+            # Check for multiple delimiters
+            if point["summary"].count("|") > 1:
+                # Split and rejoin using the first occurrence of "|"
+                parts = point["summary"].split("|", 1)
+                point["summary"] = f"{parts[0]}| {parts[1]}"
+    return data
 
 # Example podcast script
 podcast_script = """
@@ -104,5 +118,6 @@ Host: "Thank you so much, Mark, for your insights today. And thank you to all ou
 
 # Extract key points
 key_points_json = extract_key_points(podcast_script)
-markdown = json_to_markdown(key_points_json)
+cleaned = clean_delimiter(key_points_json)
+markdown = json_to_markdown(cleaned)
 print(markdown)
