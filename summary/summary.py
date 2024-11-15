@@ -95,6 +95,7 @@ def extract_key_points(text):
         print("Failed to parse JSON:", e)
         print("Raw output:", response_text)
         return None
+
 def clean_delimiter(data):
     for subject in data:
         for point in subject["points"]:
