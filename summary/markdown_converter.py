@@ -7,14 +7,17 @@ def json_to_markdown(data):
         
         # Add each point and summary under the subject
         for point in subject["points"]:
-            # Split the summary into sentences
-            sentences = point["summary"].split(". ", 1)
-            # Underline the first sentence
-            first_sentence = f"<u>{sentences[0]}.</u>" if sentences else ""
-            # Add the remaining sentences
-            remaining_text = sentences[1] if len(sentences) > 1 else ""
-            # Combine the underlined first sentence with the rest of the summary
-            markdown_output.append(f"- **{point['point']}**: {first_sentence} {remaining_text}")
+            # Split the summary into hook and remaining text using the special delimiter
+            if "|" in point["summary"]:
+                hook, remaining_text = point["summary"].split("|", 1)
+                # Underline the hook
+                hook = f"<u>{hook.strip()}</u>"
+            else:
+                hook = ""
+                remaining_text = point["summary"]
+
+            # Format the Markdown for the point and summary
+            markdown_output.append(f"- **{point['point']}**: {hook} {remaining_text.strip()}")
         
         # Add a newline for spacing between subjects
         markdown_output.append("")
