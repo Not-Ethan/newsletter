@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from openai import OpenAI
 from markdown_converter import json_to_markdown
-import re
+
 # Load environment variables
 load_dotenv("secrets.env")
 API_KEY = os.getenv("OPENAI_API_KEY")
