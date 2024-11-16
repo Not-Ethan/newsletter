@@ -1,23 +1,19 @@
-# Use Miniconda as the base image
-FROM continuumio/miniconda3
+# Use a lightweight Python base image
+FROM python:3.12-slim
 
-# Set the working directory inside the container
-WORKDIR /summary
+# Set the working directory in the container
+WORKDIR /app
 
-# Copy the environment.yml file to the container
-COPY environment.yml .
+# Copy requirements.txt to the container
+COPY requirements.txt .
 
-# Install the Conda environment from the environment.yml file
-RUN conda env create -f environment.yml
+# Install Python dependencies with pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Activate the Conda environment for future RUN commands
-SHELL ["conda", "run", "-n", "myenv", "/bin/bash", "-c"]
-
-# Copy the rest of the application code
+# Copy the rest of your application code
 COPY . .
 
-# Expose a port if needed (e.g., for a web service like Flask)
-EXPOSE 5000
+EXPOSE 8080
 
-# Define the default command to run the application
-CMD ["conda", "run", "-n", "myenv", "python", "summary.py"]
+# Set the default command to run your application (replace `app.py` with your main script)
+CMD ["python", "summary.py"]
