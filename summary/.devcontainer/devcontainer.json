@@ -5,7 +5,7 @@
 		"context": "../.." // Build context points to repo root
 	},
 	"remoteUser": "root", // Use root for simplicity
-	"workspaceFolder": "/workspaces/newsletter/summary", // Workspace set to service folder
+	"workspaceFolder": "/workspaces/newsletter/", // Workspace set to service folder
 	"runArgs": [
 		"-p", "8080:8080" // Map port 8080 for the app
 	],
