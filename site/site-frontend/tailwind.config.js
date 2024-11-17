@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       boxShadow: {
-        'solid-black': '1rem 1rem 4px 1px #000000A0', // Creates a solid black shadow
+        'neumorphic': '1rem 1rem 4px 1px #000000A0, -0.1rem -0.1rem 4px #ffffff', // Neumorphic shadow
       },
       colors: {
         // Gradient Colors
