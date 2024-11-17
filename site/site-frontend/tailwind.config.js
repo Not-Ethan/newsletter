@@ -7,10 +7,13 @@ export default {
   darkMode: 'class', // Enables class-based dark mode
   theme: {
     extend: {
+      boxShadow: {
+        'solid-black': '1rem 1rem 4px 1px #000000A0', // Creates a solid black shadow
+      },
       colors: {
         // Gradient Colors
         gradientStart: {
-          light: '#2C5364', // Light mode start color
+          light: '#ffca00', // Light mode start color
           dark: '#0F2027',  // Dark mode start color
         },
         gradientMid: {
@@ -22,14 +25,14 @@ export default {
           dark: '#2C5364',  // Dark mode end color
         },
         // Primary and Secondary Colors
-        primary: '#FFFFFF',
+        primary: '#FA8072',
         secondary: {
           100: '#008ACAFF', // Light gray
           200: '#009790FF', // Medium gray
         },
         // Neutral Background Colors
         background: {
-          light: '#FFFFFF',  // Light mode background
+          light: '#f7f2ea',  // Light mode background
           dark: '#1F2937',   // Dark mode background
         },
         // Neutral Text Colors
@@ -39,7 +42,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Helvetica', 'Arial', 'sans-serif'], // Sans-serif fonts
+        sans: ['Poppiun', 'Arial', 'sans-serif'], // Sans-serif fonts
       },
       animation: {
         gradientBG: 'gradientBG 8s ease infinite', // Gradient animation
