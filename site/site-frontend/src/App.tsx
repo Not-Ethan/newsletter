@@ -1,4 +1,3 @@
-import { motion } from "motion/react"
 import './App.css';
 import Navbar from './Navbar';
 import Section from './Section';
