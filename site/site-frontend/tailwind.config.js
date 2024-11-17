@@ -26,10 +26,6 @@ export default {
         },
         // Primary and Secondary Colors
         primary: '#FA8072',
-        secondary: {
-          100: '#008ACAFF', // Light gray
-          200: '#009790FF', // Medium gray
-        },
         // Neutral Background Colors
         background: {
           light: '#f7f2ea',  // Light mode background
@@ -42,7 +38,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Poppiun', 'Arial', 'sans-serif'], // Sans-serif fonts
+        serif: ['Atkinson Hyperlegible', 'serif'], // Sans-serif fonts
+        sans: ['Proxima Nova', 'sans-serif'], // Sans-serif fonts
       },
       animation: {
         gradientBG: 'gradientBG 8s ease infinite', // Gradient animation
