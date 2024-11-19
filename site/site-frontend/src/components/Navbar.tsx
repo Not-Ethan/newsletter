@@ -1,7 +1,7 @@
 function Navbar() {
     return (
       <nav className="shadow-md hover:shadow-none transition-shadow duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             {/* Logo */}
             <div className="flex items-center">
@@ -12,7 +12,7 @@ function Navbar() {
   
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-6">
-              <a href="#work" className="text-primary hover:underline">Work</a>
+              <a href="/dashboard" className="text-primary hover:underline">Dashboard</a>
               <a href="#services" className="text-primary hover:underline">Services</a>
               <a href="#about" className="text-primary hover:underline">About</a>
               <a href="#contact" className="text-primary hover:underline">Contact</a>
