@@ -1,15 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/Home';
-
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
 function App() {
   return (
     <Router>
       <Routes>
         {/* Home Page */}
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<Home />} />
 
         {/* New Functional Page */}
-        {/*<Route path="/functional" element={<FunctionalPage />} />*/}
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
