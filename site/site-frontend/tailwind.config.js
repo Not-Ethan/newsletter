@@ -17,11 +17,11 @@ export default {
           dark: '#0F2027',  // Dark mode start color
         },
         gradientMid: {
-          light: '#203A43', // Light mode mid color
+          light: '#F6FF00FF', // Light mode mid color
           dark: '#203A43',  // Same for both modes
         },
         gradientEnd: {
-          light: '#0F2027', // Light mode end color
+          light: '#FA8072', // Light mode end color
           dark: '#2C5364',  // Dark mode end color
         },
         // Primary and Secondary Colors
