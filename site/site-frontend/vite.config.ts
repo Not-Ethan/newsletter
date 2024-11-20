@@ -9,7 +9,7 @@ export default defineConfig({
     port: 5173,      // Ensure the port matches your Docker mapping
     strictPort: true, // Fail if the port is already in use
     proxy: {
-      "/api": {
+      "/api/": {
         target: "http://localhost:3000",
         changeOrigin: true,
         secure: false
