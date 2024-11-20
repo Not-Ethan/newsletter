@@ -3,14 +3,29 @@ import Navbar from "../components/Navbar";
 import InteractiveBlob from "../components/InteractiveBlob";
 
 const Dashboard: React.FC = () => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault(); // Prevent the default form submission behavior
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault(); // Prevent default form submission
+  
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-
-    console.log("Form submitted:", { name, email });
+    const payload: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      payload[key] = value.toString();
+    });
+  
+    try {
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      const data = await response.json();
+      console.log('Server response:', data);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
   };
 
   return (
@@ -53,7 +68,7 @@ const Dashboard: React.FC = () => {
           {/* Card 1 with Form */}
           <div className="p-4 bg-white shadow rounded">
             <h3 className="text-lg font-bold">Card 1</h3>
-            <form onSubmit={handleSubmit} action="/api" method="POST" className="mt-4">
+            <form onSubmit={handleSubmit} action="/api/transcribe" method="POST" className="mt-4">
               <div className="mb-4">
                 <label htmlFor="YoutubeURL" className="block text-sm font-medium text-gray-700">
                   YouTube URL
