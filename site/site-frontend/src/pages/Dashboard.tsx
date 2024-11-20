@@ -1,7 +1,18 @@
+import React from "react";
 import Navbar from "../components/Navbar";
 import InteractiveBlob from "../components/InteractiveBlob";
 
-function Dashboard() {
+const Dashboard: React.FC = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault(); // Prevent the default form submission behavior
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+
+    console.log("Form submitted:", { name, email });
+  };
+
   return (
     <div className="relative h-screen bg-background-light overflow-hidden overscroll-none">
       {/* Interactive Gradient Blobs */}
@@ -9,19 +20,19 @@ function Dashboard() {
         baseX={100}
         baseY={100}
         gradient="bg-gradient-to-r from-gradientStart-light to-gradientMid-light"
-        driftRange={100}
+        driftRange={10}
       />
       <InteractiveBlob
         baseX={window.innerWidth - 200}
         baseY={window.innerHeight - 300}
         gradient="bg-gradient-to-t from-gradientEnd-light to-gradientMid-light"
-        driftRange={100}
+        driftRange={10}
       />
       <InteractiveBlob
         baseX={300}
         baseY={window.innerHeight - 150}
         gradient="bg-gradient-to-tr from-gradientEnd-dark to-gradientEnd-light"
-        driftRange={100}
+        driftRange={10}
       />
 
       {/* Navbar */}
@@ -35,18 +46,40 @@ function Dashboard() {
       <main className="p-6 z-20 relative pointer-events-none">
         <h2 className="text-2xl font-semibold text-primary">Welcome to Your Dashboard</h2>
         <p className="text-gray-700 mt-4">
-          This is your simplified, functional dashboard. Add your features here!
+          Manage everything
         </p>
         {/* Example Dashboard Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 pointer-events-auto">
+          {/* Card 1 with Form */}
           <div className="p-4 bg-white shadow rounded">
             <h3 className="text-lg font-bold">Card 1</h3>
-            <p>Some information for card 1.</p>
+            <form onSubmit={handleSubmit} action="/api" method="POST" className="mt-4">
+              <div className="mb-4">
+                <label htmlFor="YoutubeURL" className="block text-sm font-medium text-gray-700">
+                  YouTube URL
+                </label>
+                <input
+                  type="text"
+                  id="YoutubeURL"
+                  name="YoutubeURL"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-primary text-white py-2 px-4 rounded-md shadow hover:bg-primary-dark focus:outline-none"
+              >
+                Submit
+              </button>
+            </form>
           </div>
+          {/* Card 2 */}
           <div className="p-4 bg-white shadow rounded">
             <h3 className="text-lg font-bold">Card 2</h3>
             <p>Some information for card 2.</p>
           </div>
+          {/* Card 3 */}
           <div className="p-4 bg-white shadow rounded">
             <h3 className="text-lg font-bold">Card 3</h3>
             <p>Some information for card 3.</p>
@@ -55,6 +88,6 @@ function Dashboard() {
       </main>
     </div>
   );
-}
+};
 
 export default Dashboard;
