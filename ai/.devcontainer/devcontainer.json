@@ -1,5 +1,5 @@
 {
-	"name": "Summary",
+	"name": "Newsletter AI",
 	"build": {
 		"dockerfile": "../dockerfile", // Path to Dockerfile relative to .devcontainer
 		"context": "../.." // Build context points to repo root
