@@ -60,3 +60,16 @@ if __name__ == "__main__":
     if audio_file:
         # Transcribe downloaded audio and save to a text file
         transcription = transcribe_audio('audio.mp3', output_text_file="transcription.txt")
+
+def get_transcription(youtube_url: str) -> str:
+    """
+    Downloads audio from
+    """
+    # Download audio
+    audio_file = download_audio(youtube_url)
+
+    if audio_file:
+        # Transcribe downloaded audio and save to a text file
+        transcription = transcribe_audio('audio.mp3', output_text_file="transcription.txt")
+        return transcription
+    return None
