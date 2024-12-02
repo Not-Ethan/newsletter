@@ -1,9 +1,22 @@
 import redis
 import json
-from worker import process_task
+import dotenv
+import os
+dotenv.load_dotenv("../.env")
+from transcriptionfeature import get_transcription
+from summary.summary import main as summarize
+
+def process_task(transcription_url):
+    """
+    Worker function to process transcription and summarization.
+    """
+    transcription = get_transcription(transcription_url)
+    if transcription:
+        summarized_text = summarize(transcription)
+        return summarized_text
 
 # Initialize Redis
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+redis_client = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=os.getenv("REDIS_PORT",6379), db=0)
 list_name = 'transcription_urls'
 pubsub_channel = 'completed_tasks'
 
@@ -35,7 +48,6 @@ def process_item(item):
 
     #notify the completion of the task
     redis_client.publish(pubsub_channel, json.dumps({"task_id": task_id}))
-
 
 # Start processing tasks
 read_from_list(redis_client, list_name)
