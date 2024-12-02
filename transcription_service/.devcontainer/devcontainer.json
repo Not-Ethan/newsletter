@@ -1,21 +1,16 @@
 {
 	"name": "Newsletter AI",
-	"build": {
-		"dockerfile": "../dockerfile", // Path to Dockerfile relative to .devcontainer
-		"context": "../.." // Build context points to repo root
-	},
-	"remoteUser": "root", // Use root for simplicity
-	"workspaceFolder": "/workspaces/newsletter/", // Workspace set to service folder
-	"runArgs": [
-		"-p", "8080:8080" // Map port 8080 for the app
-	],
-	"features": {},
+	"dockerComposeFile": ["../docker-compose.yml"], // Use Docker Compose for multi-container setup
+	"service": "app", // Define the main application service
+	"workspaceFolder": "/workspaces/newsletter/", // Set workspace folder
 	"customizations": {
 		"vscode": {
-			"extensions": ["ms-python.python"]
+			"extensions": ["ms-python.python", "ms-azuretools.vscode-docker"] // Useful extensions
 		},
 		"settings": {
-			"python.defaultInterpreterPath": "/usr/local/bin/python3"
+			"python.defaultInterpreterPath": "/usr/local/bin/python3" // Set default Python interpreter
 		}
-	}
+	},
+	"remoteUser": "root", // Use root for simplicity
+	"features": {}
 }
