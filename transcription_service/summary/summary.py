@@ -105,12 +105,15 @@ def read_file(file_path):
         logging.error(f"Error reading file {file_path}: {e}")
         raise
 
-def main():
+def main(text=None,file=TRANSCRIPTION_FILE):
     """Main function to process the podcast transcription."""
     try:
         # Load transcription and prompt
-        podcast_script = read_file(TRANSCRIPTION_FILE)
         prompt = load_prompt(PROMPT_FILE)
+        if not text:
+            podcast_script = read_file(file)
+        else:
+            podcast_script = text
 
         # Extract key points
         logging.info("Extracting key points from the transcript...")

@@ -1,75 +1,41 @@
-from flask import Flask, request
 import redis
-import hashlib
-import asyncio
-from .summary import get_summary
-from transcriptionfeature import get_transcription
-from redis.exceptions import LockError
+import json
+from worker import process_task
 
-app = Flask(__name__)
-cache = redis.Redis(host='localhost', port=6379, db=0)
-pubsub = cache.pubsub()
+# Initialize Redis
+redis_client = redis.Redis(host='localhost', port=6379, db=0)
+list_name = 'transcription_urls'
+pubsub_channel = 'completed_tasks'
 
-def get_cache_key(text):
-    return hashlib.md5(text.encode()).hexdigest()
-
-async def handle_message(message):
-    text = message['data'].decode('utf-8')
-    cache_key = get_cache_key(text)
-    lock = cache.lock(cache_key, timeout=10)  # Acquire a lock with a timeout
-
-    try:
-        if lock.acquire(blocking=False):
-            cached_transcription = cache.get(cache_key)
-            
-            if cached_transcription:
-                transcription = cached_transcription.decode('utf-8')
-            else:
-                transcription = await asyncio.to_thread(get_transcription, text)
-                cache.set(cache_key, transcription)
-            
-            # Process the transcription (e.g., store it, send it to another service, etc.)
-            print(f"Processed transcription: {transcription}")
-        else:
-            print(f"Lock not acquired for {cache_key}, skipping message.")
-    finally:
-        lock.release()
-
-async def subscribe_to_channel(channel):
-    pubsub.subscribe(channel)
+def read_from_list(redis_client, list_name):
+    """
+    Continuously read transcription tasks from the Redis list.
+    """
     while True:
-        message = pubsub.get_message()
-        if message and message['type'] == 'message':
-            await handle_message(message)
-        await asyncio.sleep(0.01)
+        item = redis_client.blpop(list_name, timeout=0)  # Blocking pop
+        if item:
+            process_item(item[1])
 
-@app.route('/transcribe', methods=['GET', 'POST'])
-async def transcribe():
-    if request.method == 'POST':
-        text = request.form.get('text')
-    else:
-        text = request.args.get('text')
+def process_item(item):
+    """
+    Process an individual transcription task.
+    """
+    # Decode the JSON-encoded task data
+    task_data = json.loads(item.decode('utf-8'))
+    task_id = task_data['task_id']
+    transcription_url = task_data['transcription_url']
     
-    if text:
-        cache_key = get_cache_key(text)
-        cached_transcription = cache.get(cache_key)
-        
-        if cached_transcription:
-            return cached_transcription.decode('utf-8')
-        
-        transcription = await asyncio.to_thread(get_transcription, text)
-        cache.set(cache_key, transcription)
-        return transcription
-    else:
-        return "No text provided", 400
+    print(f"Processing transcription URL: {transcription_url} with Task ID: {task_id}")
+    
+    # Process the transcription and summarization
+    summarized_text = process_task(transcription_url)
+    
+    # Store the summarized text in Redis using the UUID as the key
+    redis_client.set(f"summary:{task_id}", summarized_text)
 
-@app.route('/about')
-def about():
-    return "About the Newsletter"
+    #notify the completion of the task
+    redis_client.publish(pubsub_channel, json.dumps({"task_id": task_id}))
 
-if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.create_task(subscribe_to_channel('transcription_requests'))
-    app.run(debug=True, use_reloader=False)
-    loop.run_forever()
 
+# Start processing tasks
+read_from_list(redis_client, list_name)

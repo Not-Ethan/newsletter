@@ -2,10 +2,10 @@
 FROM python:3.12-slim
 
 # Set the working directory
-WORKDIR /workspaces/newsletter/ai
+WORKDIR /workspaces/newsletter/transcription_service
 
 # Copy the application code
-COPY ai/ .
+COPY transcription_service/ .
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
