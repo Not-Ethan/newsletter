@@ -3,10 +3,10 @@ version: "3.8"
 services:
   main_app:
     build:
-      context: ./main_app # Path to the main application folder
+      context: ./site # Path to the main application folder
       dockerfile: Dockerfile
     volumes:
-      - ./main_app:/workspace/main_app
+      - ./site:/workspace/newsletter/site
     ports:
       - "8080:8080" # Expose the main app port
     environment:
@@ -23,7 +23,7 @@ services:
       context: ./transcription_service # Path to the transcription service folder
       dockerfile: Dockerfile
     volumes:
-      - ./transcription_service:/workspace/transcription_service
+      - ./transcription_service:/workspace/newsletter/transcription_service
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
