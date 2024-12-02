@@ -1,1 +1,1 @@
-from transcription import get_transcription
+from .transcription import get_transcription
