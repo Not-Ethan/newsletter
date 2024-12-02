@@ -1,26 +1,16 @@
-# Use a base image that supports both Node.js and Python
-FROM node:22.11.0
+# Use Node.js base image with Python pre-installed
+FROM node:22.11.0-bullseye
 
-# Install Python dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.12 \
-    python3-pip \
-    python3-venv \
-    git \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Set environment variables
+# Set environment variables for Python and Node.js
 ENV PYTHONUNBUFFERED=1
 ENV NODE_ENV=development
 
 # ------------ Site Setup (Node.js Application) ------------
-# Set working directory for the Node.js application
+# Set working directory for Node.js backend
 WORKDIR /workspaces/newsletter/site
 
-# Copy backend dependency files
+# Copy backend dependency files and install dependencies
 COPY site/package.json site/package-lock.json ./
-
-# Install Node.js backend dependencies
 RUN npm install
 
 # Copy backend source code
@@ -29,13 +19,9 @@ COPY site/ .
 # Set working directory for the frontend
 WORKDIR /workspaces/newsletter/site/site-frontend
 
-# Copy frontend dependency files
+# Copy frontend dependency files and install dependencies
 COPY site/site-frontend/package.json site/site-frontend/package-lock.json ./
-
-# Install frontend dependencies
 RUN npm install
-
-# Copy frontend source code
 COPY site/site-frontend/ ./
 
 # ------------ Transcription Service Setup (Python Application) ------------
@@ -48,9 +34,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY transcription_service/ ./
 
 # ------------ Expose Ports ------------
-# Expose backend (Node.js) and Python transcription service ports
-EXPOSE 5173 
-EXPOSE 8080 
+# Expose frontend (React), backend (Node.js), and transcription service (Python)
+EXPOSE 5173
+EXPOSE 8080
 EXPOSE 5000  
 
 # ------------ Default Command ------------
