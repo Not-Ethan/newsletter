@@ -1,0 +1,16 @@
+{
+	"name": "Newsletter AI",
+	"dockerComposeFile": ["../docker-compose.yml"], // Use Docker Compose for multi-container setup
+	"service": "app", // Define the main application service
+	"workspaceFolder": "/workspaces/newsletter/", // Set workspace folder
+	"customizations": {
+		"vscode": {
+			"extensions": ["ms-python.python", "ms-azuretools.vscode-docker"] // Useful extensions
+		},
+		"settings": {
+			"python.defaultInterpreterPath": "/usr/local/bin/python3" // Set default Python interpreter
+		}
+	},
+	"remoteUser": "root", // Use root for simplicity
+	"features": {}
+}

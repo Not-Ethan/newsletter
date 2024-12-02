@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  main_app:
+    build:
+      context: ./site # Path to the main application folder
+      dockerfile: Dockerfile
+    volumes:
+      - ./site:/workspace/newsletter/site
+    ports:
+      - "8080:8080" # Expose the main app port
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+    depends_on:
+      - redis
+      - mongo
+
+  transcription_service:
+    build:
+      context: ./transcription_service # Path to the transcription service folder
+      dockerfile: Dockerfile
+    volumes:
+      - ./transcription_service:/workspace/newsletter/transcription_service
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379" # Expose Redis for host access (optional)
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017" # Expose MongoDB for host access (optional)
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
