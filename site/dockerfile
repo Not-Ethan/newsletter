@@ -1,0 +1,34 @@
+# Use Node.js as the base image
+FROM node:22.11.0
+
+# Set the working directory for the backend
+WORKDIR /workspaces/newsletter/site
+
+# Copy backend dependency files
+COPY package.json package-lock.json ./
+
+# Install backend dependencies
+RUN npm install
+
+# Copy backend source code
+COPY . .
+
+# Set working directory for the frontend
+WORKDIR /workspaces/newsletter/site/site-frontend
+
+# Copy frontend dependency files
+COPY site-frontend/package.json site-frontend/package-lock.json ./
+
+# Install frontend dependencies (including dev dependencies)
+RUN npm install
+
+# Copy all frontend source code
+COPY site-frontend/ ./
+
+# Expose backend and frontend ports
+WORKDIR /workspaces/newsletter/site
+EXPOSE 5173
+EXPOSE 8080
+
+# Default command for backend
+CMD ["npm", "start"]

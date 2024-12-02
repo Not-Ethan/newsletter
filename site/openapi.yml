@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  title: Transcription and Summary API
+  description: API for handling transcription requests and retrieving summaries.
+  version: 1.0.0
+servers:
+  - url: https://api.yourdomain.com
+    description: Production server
+  - url: http://localhost:3000
+    description: Local development server
+paths:
+  /api/transcription:
+    post:
+      summary: Submit a YouTube URL for transcription
+      description: Takes a YouTube URL and initiates the transcription process.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                youtubeURL:
+                  type: string
+                  format: uri
+                  description: The URL of the YouTube video to transcribe.
+                  example: "https://www.youtube.com/watch?v=abcd1234"
+      responses:
+        '200':
+          description: Transcription request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Status of the transcription request.
+                    example: "success"
+                  transcriptionId:
+                    type: string
+                    description: Unique identifier for the transcription process.
+                    example: "12345"
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: "Invalid YouTube URL"
+  /api/summary/:transcriptionId:
+    get:
+      summary: Retrieve the summary of the transcription
+      description: Returns the summarized content of the transcribed YouTube video.
+      responses:
+        '200':
+          description: Summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+                    description: Summarized text of the transcription.
+                    example: "This video discusses the importance of sustainable development."
+                  transcriptionId:
+                    type: string
+                    description: Unique identifier for the related transcription.
+                    example: "12345"
+        '404':
+          description: Summary not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: "Summary not found for the given transcription ID"
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message describing what went wrong.
+    Summary:
+      type: object
+      properties:
+      transcriptionId:
+        type: string
+        description: Unique identifier for the related transcription.
+      ideas:
+        type: array
+        items:
+          type: string
+        description: List of key ideas extracted from the transcription.
