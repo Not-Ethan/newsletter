@@ -5,7 +5,13 @@
 	"workspaceFolder": "/workspaces/newsletter/", // Set workspace folder
 	"customizations": {
 		"vscode": {
-			"extensions": ["ms-python.python", "ms-azuretools.vscode-docker"] // Useful extensions
+			"extensions": [
+				"ms-python.python", 
+				"ms-azuretools.vscode-docker", 
+				"dbaeumer.vscode-eslint",
+				"esbenp.prettier-vscode",
+				"bradlc.vscode-tailwindcss",
+				"naumovs.color-highlight"] // Useful extensions
 		},
 		"settings": {
 			"python.defaultInterpreterPath": "/usr/local/bin/python3" // Set default Python interpreter

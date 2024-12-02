@@ -31,4 +31,4 @@ EXPOSE 5173
 EXPOSE 8080
 
 # Default command for backend
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
