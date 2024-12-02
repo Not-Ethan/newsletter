@@ -1,8 +1,7 @@
 # Use Node.js base image with Python pre-installed
-FROM node:22.11.0-bullseye
+FROM nikolaik/python-nodejs:python3.12-nodejs22
 
 # Set environment variables for Python and Node.js
-ENV PYTHONUNBUFFERED=1
 ENV NODE_ENV=development
 
 # ------------ Site Setup (Node.js Application) ------------
@@ -21,7 +20,7 @@ WORKDIR /workspaces/newsletter/site/site-frontend
 
 # Copy frontend dependency files and install dependencies
 COPY site/site-frontend/package.json site/site-frontend/package-lock.json ./
-RUN npm install
+RUN npm install && echo "Frontend dependencies installed."
 COPY site/site-frontend/ ./
 
 # ------------ Transcription Service Setup (Python Application) ------------
@@ -37,8 +36,8 @@ COPY transcription_service/ ./
 # Expose frontend (React), backend (Node.js), and transcription service (Python)
 EXPOSE 5173
 EXPOSE 8080
-EXPOSE 5000  
+EXPOSE 6379  
 
 # ------------ Default Command ------------
 # Run both services concurrently
-CMD ["sh", "-c", "npm run dev --prefix /workspaces/newsletter/site & python /workspaces/newsletter/transcription_service/app.py"]
+CMD [""]

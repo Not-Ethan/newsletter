@@ -10,13 +10,14 @@ services:
       - /workspaces/newsletter/site/node_modules # Avoid overriding node_modules
     ports:
       - "5173:5173" # Frontend (React)
-      - "8080:8080" # Backend (Node.js)
-      - "5000:5000" # Transcription service (Python)
+      - "3000:3000" # Backend (Express)
+    env_file:
+      - .env
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      MONGO_HOST: mongo
-      MONGO_PORT: 27017
+      - REDIS_HOST: redis
+      - REDIS_PORT: 6379
+      - MONGO_HOST: mongo
+      - MONGO_PORT: 27017
     depends_on:
       - redis
       - mongo
