@@ -128,9 +128,10 @@ def main(text=None,file=TRANSCRIPTION_FILE):
             cleaned = clean_delimiter(key_points_json)
             markdown = json_to_markdown(cleaned)
             logging.info("Markdown generation complete.")
-            print(markdown)
         else:
             logging.error("Failed to generate key points.")
+            return None
+        return markdown
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
