@@ -18,6 +18,5 @@
 		}
 	},
 	"remoteUser": "root", // Use root for simplicity
-	"features": {},
 	"overrideCommand": true
 }
