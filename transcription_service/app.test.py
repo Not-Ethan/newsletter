@@ -25,6 +25,11 @@ class TestApp(unittest.TestCase):
         Test the process_task function.
         """
         self.redis_client.rpush(redis_list, json.dumps({"task_id": str(uuid.uuid4()), "transcription_url": "https://www.youtube.com/watch?v=_vczZwgh4-A&list=PLFR7sDPf0Klc7SQ7mMDeZRvDJWwhVtczz"}))
+    def clean_up(self):
+        """
+        Clean up after the tests.
+        """
+        self.redis_client.flushall()
 
 test = TestApp()
 
