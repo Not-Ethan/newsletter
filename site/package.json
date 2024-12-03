@@ -12,9 +12,11 @@
   "description": "",
   "dependencies": {
     "express": "^4.21.1",
+    "mongoose": "^8.8.3",
     "redis": "^4.7.0"
   },
   "devDependencies": {
+    "@types/redis": "^4.0.10",
     "concurrently": "^9.1.0",
     "nodemon": "^3.1.7"
   }
