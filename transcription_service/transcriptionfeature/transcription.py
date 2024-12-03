@@ -41,7 +41,6 @@ class WhisperTranscriber:
                 for segment in segments:
                     start, end, text = segment.start, segment.end, segment.text
                     transcription.append(text)
-                    logging.info(f"Segment [{start:.2f}s - {end:.2f}s]: {text}")
                     # Update progress bar based on the end time of the segment
                     pbar.update(end - pbar.n)
 
