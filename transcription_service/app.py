@@ -5,6 +5,7 @@ import os
 dotenv.load_dotenv("../.env")
 from transcriptionfeature import get_transcription
 from summary.summary import main as summarize
+import logging
 
 def process_task(transcription_url):
     """
@@ -14,11 +15,14 @@ def process_task(transcription_url):
     if transcription:
         summarized_text = summarize(transcription)
         return summarized_text
+    else:
+        logging.error(f"Could not retrieve transcription for URL: {transcription_url}")
+        return None
 
 # Initialize Redis
 redis_client = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=os.getenv("REDIS_PORT",6379), db=0)
-list_name = 'transcription_urls'
-pubsub_channel = 'completed_tasks'
+list_name = os.getenv("TASK_LIST", "transcription_urls")
+pubsub_channel = os.getenv("PUBSUB", "completed_tasks")
 
 def read_from_list(redis_client, list_name):
     """
@@ -35,19 +39,31 @@ def process_item(item):
     """
     # Decode the JSON-encoded task data
     task_data = json.loads(item.decode('utf-8'))
+
+    # Check if the task data is valid and has the required fields
+    if not task_data or 'task_id' not in task_data or 'url' not in task_data:
+        logging.error(f"Invalid task data: {task_data}")
+        return
+    
     task_id = task_data['task_id']
-    transcription_url = task_data['transcription_url']
+    transcription_url = task_data['url']
+    if not transcription_url or not task_id:
+        logging.error(f"Invalid task data: {task_data}")
+        return
     
     print(f"Processing transcription URL: {transcription_url} with Task ID: {task_id}")
     
     # Process the transcription and summarization
     summarized_text = process_task(transcription_url)
-    
+    if not summarized_text:
+        logging.error(f"Could not summarize transcription for URL: {transcription_url}")
+        redis_client.publish(pubsub_channel, json.dumps({"task_id": task_id, "status": "failed"}))
+
     # Store the summarized text in Redis using the UUID as the key
     redis_client.set(f"summary:{task_id}", summarized_text)
 
     #notify the completion of the task
-    redis_client.publish(pubsub_channel, json.dumps({"task_id": task_id}))
+    redis_client.publish(pubsub_channel, json.dumps({"task_id": task_id, "status": "completed"}))
 
 # Start processing tasks
 read_from_list(redis_client, list_name)
