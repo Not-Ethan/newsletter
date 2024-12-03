@@ -21,6 +21,7 @@ def process_task(transcription_url):
 
 # Initialize Redis
 redis_client = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=os.getenv("REDIS_PORT",6379), db=0)
+
 list_name = os.getenv("TASK_LIST", "transcription_urls")
 completed_list = os.getenv("COMPLETED_LIST", "completed_tasks")
 
@@ -54,14 +55,14 @@ def process_item(item):
     print(f"Processing transcription URL: {transcription_url} with Task ID: {task_id}")
     
     # Process the transcription and summarization
-    summarized_text = process_task(transcription_url)
-    if not summarized_text:
+    summary_result = process_task(transcription_url)
+    if not summary_result:
         logging.error(f"Could not process request for URL: {transcription_url}")
         redis_client.lpush(completed_list, json.dumps({"task_id": task_id, "status": "failed"}))
         return
 
     # Store the summarized text in Redis using the UUID as the key
-    redis_client.set(f"task:{task_id}", summarized_text)
+    redis_client.set(f"task:{task_id}", json.dumps(summary_result))
 
     # Notify the completion of the task
     redis_client.lpush(completed_list, json.dumps({"task_id": task_id, "status": "completed"}))
