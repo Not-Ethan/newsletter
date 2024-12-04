@@ -1,11 +1,15 @@
 const express = require('express');
-const crypto = require('crypto');
 const rd = require('redis');
 const mongoose = require('mongoose');
-const Task = require('./models/Task');
+const session = require('express-session');
+const passport = require('./passport'); // Import configured Passport
+const { RedisStore } = require('connect-redis');
 
 const app = express();
 const port = 3000;
+
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // Redis clients for submitting and processing tasks
 const redisSubmit = rd.createClient({
@@ -21,70 +25,37 @@ const redisProcess = rd.createClient({
     port: process.env.REDIS_PORT || 6379,
   },
 });
+const completedList = process.env.REDIS_COMPLETED_LIST || 'completed_tasks';
+
+// Connect to Redis
+redisSubmit.connect().catch(console.error);
+redisProcess.connect().catch(console.error);
 
 // MongoDB connection
 mongoose.connect(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`, {});
+const Task = require('./models/Task');
 
-// Task lists
-const taskList = process.env.TASK_LIST || 'transcription_urls';
-const completedList = process.env.COMPLETED_LIST || 'completed_tasks';
+// Middleware config
+// app.use(session({
+//   store: new RedisStore({
+//     client: redisSubmit,
+//     prefix: 'session:',
+//   }),
+//   secret: process.env.SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: { maxAge: 60 * 60 * 1000 }
+// }));
 
-// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Endpoint to submit a transcription task
-app.post('/api/transcribe', async (req, res) => {
-  let url = req.body['youtubeURL'];
-  console.log(req.body);
+// Load routes
+const transcriptionRoutes = require('./routes/transcription')(redisSubmit);
+const authRoutes = require('./routes/auth');
 
-  const task = new Task({
-    url: url,
-    task_id: crypto.randomUUID(),
-  });
-
-  try {
-    await task.save();
-    console.log('Task saved:', task.task_id, taskList);
-    console.log('Preparing to push task to Redis...');
-
-    const taskData = JSON.stringify({
-      url: url,
-      task_id: task.task_id,
-    });
-
-    console.log('Task data:', taskData);
-
-    const pushResult = await Promise.race([
-      redisSubmit.lPush(taskList, taskData),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Redis lPush timeout')), 5000)),
-    ]);
-
-    console.log('Task pushed to Redis:', task.task_id, taskList, pushResult);
-    res.status(200).send('Task added');
-  } catch (err) {
-    console.error('Error:', err);
-    res.status(500).send('Error');
-  }
-});
-
-// Endpoint to get the summary of a task
-app.get('/api/summary/:id', async (req, res) => {
-
-  // Check cache first, then database
-  let summary = await redisSubmit.get(req.params.id);
-
-  if (!summary) {
-    summary = await Task.findOne({ task_id: req.params.id });
-
-    //cache miss, cache the result
-    if (summary) {
-      redisSubmit.set(req.params.id, JSON.stringify(summary), { EX: 60*15 });
-    }
-  }
-
-  res.send(summary);
-});
+app.use('/api', transcriptionRoutes);
+app.use('/api', authRoutes);
 
 // Start the server
 app.listen(port, () => {
@@ -123,7 +94,6 @@ redisProcess.on('connect', () => {
           } else if (task.status === 'completed') {
             let taskResult = await redisProcess.get("task:" + task.task_id);
             await Task.findOneAndUpdate({ task_id: task.task_id }, { status: 'completed', content: taskResult });
-
           }
         } else {
           console.error('Received invalid message:', message);
@@ -137,6 +107,4 @@ redisProcess.on('connect', () => {
   processTasks();
 });
 
-// Connect to Redis
-redisSubmit.connect();
-redisProcess.connect();
+module.exports = { redisSubmit, redisProcess };
