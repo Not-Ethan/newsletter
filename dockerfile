@@ -4,6 +4,9 @@ FROM nikolaik/python-nodejs:python3.12-nodejs22
 # Set environment variables for Python and Node.js
 ENV NODE_ENV=development
 
+# Install FFmpeg
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+
 # ------------ Site Setup (Node.js Application) ------------
 # Set working directory for Node.js backend
 WORKDIR /workspaces/newsletter/site

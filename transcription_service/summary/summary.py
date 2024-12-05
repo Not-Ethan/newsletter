@@ -16,7 +16,7 @@ API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=API_KEY)
 
 # Configuration
-PROMPT_FILE = "./prompt.txt"
+PROMPT_FILE = os.getenv("PROMPT_FILE", "./prompt.txt")
 TRANSCRIPTION_FILE = "./transcription.txt"
 
 def load_prompt(file_path):
@@ -106,7 +106,11 @@ def read_file(file_path):
         raise
 
 def main(text=None,file=TRANSCRIPTION_FILE):
-    """Main function to process the podcast transcription."""
+    """
+    Main function to process the podcast transcription'
+    SHOULD NEVER BE CALLED WITH 'text' NONE EXCEPT FOR TESTING
+    :param text: The podcast transcription text
+    '"""
     try:
         # Load transcription and prompt
         prompt = load_prompt(PROMPT_FILE)
@@ -121,12 +125,13 @@ def main(text=None,file=TRANSCRIPTION_FILE):
 
         if key_points_json:
             # Clean delimiters and convert to Markdown
-            cleaned = clean_delimiter(key_points_json)
-            markdown = json_to_markdown(cleaned)
+            cleaned_json = clean_delimiter(key_points_json)
+            markdown = json_to_markdown(cleaned_json)
             logging.info("Markdown generation complete.")
-            print(markdown)
         else:
             logging.error("Failed to generate key points.")
+            return None
+        return {'markdown': markdown, 'json': cleaned_json}
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
