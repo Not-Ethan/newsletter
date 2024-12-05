@@ -30,6 +30,7 @@ export default {
         background: {
           light: '#f7f2ea',  // Light mode background
           dark: '#1F2937',   // Dark mode background
+          back: ''
         },
         // Neutral Text Colors
         text: {

@@ -4,27 +4,16 @@
   "main": "main.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "nodemon --env-file=../.env main.js",
+    "dev:backend": "nodemon main.js",
     "dev:frontend": "cd site-frontend && npm run dev"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "aws-sdk": "^2.1692.0",
-    "connect-redis": "^8.0.0",
-    "express": "^4.21.1",
-    "express-session": "^1.18.1",
-    "mongoose": "^8.8.3",
-    "nodemailer": "^6.9.16",
-    "passport": "^0.7.0",
-    "passport-strategy": "^1.0.0",
-    "redis": "^4.7.0"
+    "express": "^4.21.1"
   },
   "devDependencies": {
-    "@types/connect-redis": "^0.0.23",
-    "@types/passport-strategy": "^0.2.38",
-    "@types/redis": "^4.0.10",
     "concurrently": "^9.1.0",
     "nodemon": "^3.1.7"
   }

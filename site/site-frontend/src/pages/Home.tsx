@@ -5,16 +5,19 @@ import Section from '../components/Section';
 function Home() {
   return (
     <div className="relative snap-y snap-mandatory overflow-y-scroll h-screen">
-      {/* Fixed Gradient Background */}
-      <div className="fixed top-0 left-0 w-full h-full bg-gradient-to-tr from-gradientStart-light to-primary -z-10"></div>
+      {/* Fixed Background*/} 
+      <div className="fixed top-0 left-0 w-full h-full bg-background-light -z-10"></div>
+
+      <div className="fixed top-0 left-0 w-full z-50">
+        <Navbar />
+      </div>
 
       {/* Section 1 */}
       <Section innerClassName="flex flex-col">
-        <Navbar />
         <div className="text-center mx-10 flex grow flex-col justify-center items-center">
-          <h1 className="text-8xl font-semibold font-serif text-primary">Newsletta</h1>
+          <h1 className="text-8xl font-semibold font-serif text-primary">Welcome to Newsletta</h1>
           <h2 className="text-3xl font-thin font-serif text-primary my-2 max-w-3xl">
-            The best way to stay up to date with the latest news
+            Transform your video and podcast content into shareable newsletters with ease!
           </h2>
           <button className="bg-transparent border-2 border-primary text-primary font-light font-serif text-xl px-6 py-2 rounded-lg mt-7">
             Get Started

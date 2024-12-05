@@ -76,7 +76,7 @@ const Dashboard: React.FC = () => {
                 <input
                   type="text"
                   id="YoutubeURL"
-                  name="youtubeURL"
+                  name="YoutubeURL"
                   className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
                   required
                 />
