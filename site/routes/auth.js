@@ -1,47 +1,104 @@
-
 const express = require('express');
 const crypto = require('crypto');
-const nodeMailer = require('nodemailer');
-const transporter = nodeMailer.createTransport({
-  SES: {
-    apiVersion: '2010-12-01',
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-  },
+const nodemailer = require('nodemailer');
+const AWS = require('aws-sdk');
+const User = require('../models/user');
+
+// Configure AWS SDK
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
 });
 
-const router = express.Router();
+// Create an SES instance
+const ses = new AWS.SES({ apiVersion: '2010-12-01', region: process.env.AWS_REGION || 'us-east-2' });
 
-router.post('/login', (req, res) => {
-  const email = req.body.email;
-  if (!email || !verifyEmail(email)) {
-    return res.status(400).send('Email is required');
-  }
-  const token = crypto.randomBytes(16).toString('hex');
+// Create Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  SES: ses, // Use AWS SES instance
+});
 
-// Send email
-transporter.sendMail({
-  from: 'test@darch.com',
-  to: email,
-  subject: 'Test Email',
-  text: 'Please use this link to log in.', // Plain text fallback
-  html: `
-    <div style="font-family: Arial, sans-serif; color: #333;">
-      <h1>Welcome to Our Service!</h1>
-      <p>We're excited to have you on board. Please use the button below to log in:</p>
-      <a href="localhost:5173/login?token=${token}" 
-         style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-        Log In Now
-      </a>
-      <p>If the button doesn't work, copy and paste this link into your browser:</p>
-      <p><a href="https://example.com/login">https://example.com/login</a></p>
-    </div>
-  `
-});
-});
+const createAuthRouter = (redisClient) => {
+  const router = express.Router();
+
+  // Login Route
+  router.post('/login', async (req, res) => {
+    const email = req.body.email;
+
+    // Validate email
+    if (!email || !verifyEmail(email)) {
+      return res.status(400).send('Invalid or missing email address.');
+    }
+
+    try {
+      // Generate a magic link token
+      const token = crypto.randomBytes(16).toString('hex');
+
+      // Store token in Redis for 15 minutes
+      await redisClient.setex(token, 60 * 15, email);
+
+      // Send email
+      const mailOptions = {
+        from: 'test@darchai.com', // Verified SES email address
+        to: email,
+        subject: 'Your Magic Login Link',
+        text: `Please use this link to log in: http://localhost:5173/api/auth/${token}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; color: #333;">
+            <h1>Welcome to Our Service!</h1>
+            <p>We're excited to have you on board. Please use the button below to log in:</p>
+            <a href="http://localhost:5173/api/auth/${token}" 
+               style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+              Log In Now
+            </a>
+            <p>If the button doesn't work, copy and paste this link into your browser:</p>
+            <p>http://localhost:5173/api/auth/${token}</p>
+          </div>
+        `,
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully:', info.messageId);
+
+      // Respond to client
+      res.status(200).send('Magic link sent to your email!');
+    } catch (err) {
+      console.error('Error sending email:', err);
+      res.status(500).send('Failed to send magic link.');
+    }
+  });
+
+  // Auth Route
+  router.get('/auth/:token', async (req, res) => {
+    const token = req.params.token;
+
+    try {
+      // Check token in Redis
+      const email = await redisClient.get(token);
+
+      if (!email) {
+        return res.status(400).send('Invalid or expired token.');
+      }
+      await redisClient.del(token);
+      
+      // Create a new user or update the existing one
+      
+
+      res.status(200).send('Authentication successful!');
+    } catch (err) {
+      console.error('Error during authentication:', err);
+      res.status(500).send('Authentication failed.');
+    }
+  });
+
+  return router;
+};
+
+// Email Validation Function
 function verifyEmail(email) {
   email = email.trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-module.exports = router;
+
+module.exports = createAuthRouter;

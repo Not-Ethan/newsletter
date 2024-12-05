@@ -8,9 +8,6 @@ const { RedisStore } = require('connect-redis');
 const app = express();
 const port = 3000;
 
-// app.use(passport.initialize());
-// app.use(passport.session());
-
 // Redis clients for submitting and processing tasks
 const redisSubmit = rd.createClient({
   socket: {
@@ -25,34 +22,44 @@ const redisProcess = rd.createClient({
     port: process.env.REDIS_PORT || 6379,
   },
 });
+
+const sessionClient = rd.createClient({
+  socket: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: process.env.REDIS_PORT || 6379,
+  },
+});
+
 const completedList = process.env.REDIS_COMPLETED_LIST || 'completed_tasks';
 
 // Connect to Redis
 redisSubmit.connect().catch(console.error);
 redisProcess.connect().catch(console.error);
+sessionClient.connect().catch(console.error);
 
 // MongoDB connection
 mongoose.connect(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}`, {});
 const Task = require('./models/Task');
 
-// Middleware config
-// app.use(session({
-//   store: new RedisStore({
-//     client: redisSubmit,
-//     prefix: 'session:',
-//   }),
-//   secret: process.env.SESSION_SECRET,
-//   resave: false,
-//   saveUninitialized: false,
-//   cookie: { maxAge: 60 * 60 * 1000 }
-// }));
+app.use(session({
+  store: new RedisStore({
+    client: sessionClient,
+    prefix: 'session:',
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 60 * 60 * 1000 }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Load routes
 const transcriptionRoutes = require('./routes/transcription')(redisSubmit);
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth')(sessionClient);
 
 app.use('/api', transcriptionRoutes);
 app.use('/api', authRoutes);
