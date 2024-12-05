@@ -36,7 +36,7 @@ const createAuthRouter = (redisClient) => {
       const token = crypto.randomBytes(16).toString('hex');
 
       // Store token in Redis for 15 minutes
-      await redisClient.setex(token, 60 * 15, email);
+      await redisClient.setEx(token, 60 * 15, email);
 
       // Send email
       const mailOptions = {

@@ -114,4 +114,3 @@ redisProcess.on('connect', () => {
   processTasks();
 });
 
-module.exports = { redisSubmit, redisProcess };

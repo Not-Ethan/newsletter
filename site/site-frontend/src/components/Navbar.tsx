@@ -30,10 +30,10 @@ function Navbar() {
       <div className="flex space-x-4">
         {/* Sign In */}
         <a
-          href="/signin"
+          href="/login"
           className="px-4 py-2 border border-[#FA8072] text-[#FA8072] rounded-full hover:bg-[#FA8072] hover:text-white transition"
         >
-          Sign In
+          Log in
         </a>
         {/* Get Started */}
         <a
