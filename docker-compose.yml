@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: . # Root directory for combined Dockerfile
+      dockerfile: ./dockerfile # Path to the combined Dockerfile
+    volumes:
+      - .:/workspaces/newsletter
+      - /workspaces/newsletter/site/node_modules # Avoid overriding node_modules
+    ports:
+      - "5173:5173" # Frontend (React)
+      - "3000:3000" # Backend (Express)
+    env_file:
+      - .env
+      - secrets.env
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+    depends_on:
+      - redis
+      - mongo
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379" # Expose Redis for host access
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017" # Expose MongoDB for host access
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

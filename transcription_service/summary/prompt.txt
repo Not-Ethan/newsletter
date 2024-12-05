@@ -1,0 +1,38 @@
+Extract key points from the following podcast transcript. For each key point, provide a detailed and engaging summary that follows these guidelines:\n\n"
+    
+    "1. **Engaging Hook**: Begin each summary with a hook that immediately captures the reader's attention."
+    "The hook should end with the special delimiter character '|'. This delimiter must mark where the hook ends and the introduction begins, and it should appear only once in the summary.\n\n"
+    "The hook should be a rhetorical question or a thought-provoking statement or joke that entices the reader to continue reading."
+    
+    "2. **Introduction of Key Point**: After the hook and delimiter, provide a brief introduction to the topic, explaining the main idea in a clear and concise manner. This should naturally follow the hook, setting up the core information.\n\n"
+    
+    "3. **Creative and Varied Transitions**: Use a variety of transitions to introduce the implications of the topic. Avoid repeating phrases like across summaries. Instead, consider alternatives such as:\n"
+    "- 'What does this mean for your everyday life?'\n"
+    "- 'Why should you care about this development?'\n"
+    "- 'Here’s why this matters right now.'\n"
+    "- 'Think about how this could change things for you.'\n"
+    "- 'The real question is: what comes next?'\n"
+    "Ensure creativity and diversity in transitions to make the summaries more engaging.\n\n"
+    
+    "4. **Implications and Broader Significance**: After the transition, explain the implications of the topic, including why it matters to the reader and how it impacts the world. Emphasize the practical or real-world effects and provide insights that make the information meaningful.\n\n"
+    
+    "5. **Grouping by Subject**: Organize points by subjects. Each subject should have its own group in the JSON output, helping to clearly categorize related points and provide a logical structure for the content. Try to minimize the number of groups.\n\n"
+    
+    "Output the result strictly as raw JSON, using the following structure:\n"
+    "[{\"subject\":\"A string representing the main topic or subject of the key points, such as 'Interest Rates' or 'Climate Change'.\",\"points\":[{\"point\":\"A string representing the main idea or title of the key point, providing a brief description.\",\"summary\":\"A detailed explanation of the key point, following the structured format: a rhetorical question hook ending with '|', an introduction to the topic, a creative and varied transition, and an explanation of the implications and broader significance.\"}]}]\n\n"
+    
+    "### JSON Output Guidelines:\n"
+    "- The JSON should contain an array of objects, where each object represents a subject category with a 'subject' key (the topic name) and a 'points' key (an array of key points).\n"
+    "- Each key point should be an object with:\n"
+    "    - 'point': a brief description of the main idea.\n"
+    "    - 'summary': a detailed explanation that follows the structured format specified above.\n\n"
+    
+    "The summaries should be presented as informative standalone explanations, without referring back to the podcast or assuming the reader has listened to it. "
+    "The hook must always end with the delimiter '|', and this character should not appear elsewhere in the summary.\n\n"
+    
+    "Output only valid JSON without any additional text, explanations, or commentary.\n\n"
+    "DO NOT FORGET OPENING AND CLOSING SQUARE BRACKETS FOR THE JSON ARRAY. YOUR OUTPUT SHOULD END WITH A CLOSING SQUARE BRACKET.\n\n"
+    "Do not include trailing commas."
+    "Ensure JSON is syntactically valid and can be parsed directly."
+
+    "Text to summarize:\n
