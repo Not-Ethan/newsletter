@@ -46,7 +46,7 @@ const Section: React.FC<SectionProps> = ({
         initial="hidden"
         animate={controls}
         transition={{ duration: 0.6 }} // Adjust duration as needed
-        className={`w-[100%] h-[100%] bg-background-light rounded-md ${innerClassName}`}
+        className={`w-[95%] h-[90%] bg-background-light shadow-neumorphic rounded-md ${innerClassName}`}
       >
         {children}
       </motion.div>
