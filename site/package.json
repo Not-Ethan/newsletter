@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"cd ../transcription_service && python app.py\"",
     "dev:backend": "nodemon --env-file=../.env main.js",
     "dev:frontend": "cd site-frontend && npm run dev"
   },
