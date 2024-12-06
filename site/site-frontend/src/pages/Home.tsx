@@ -5,9 +5,10 @@ import Section from '../components/Section';
 function Home() {
   return (
     <div className="relative snap-y snap-mandatory overflow-y-scroll h-screen">
-      {/* Fixed Background*/} 
-      <div className="fixed top-0 left-0 w-full h-full bg-background-light -z-10"></div>
-
+      {/* Fixed Background */}
+      <div className="fixed top-0 left-0 w-full h-full bg-pattern -z-10"></div>
+      <div className="section-vignette-overlay"></div>
+      {/* Navbar */}
       <div className="fixed top-0 left-0 w-full z-50">
         <Navbar />
       </div>

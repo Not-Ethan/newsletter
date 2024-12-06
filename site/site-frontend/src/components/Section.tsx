@@ -24,16 +24,9 @@ const Section: React.FC<SectionProps> = ({
     }
   }, [isInView, controls]);
 
-  // Animation variants for the inner content
   const variants = {
-    hidden: {
-      opacity: 0,
-      y: 20, // Start with a 20px offset below the natural position
-    },
-    visible: {
-      opacity: 1,
-      y: 0,  // Animate to the natural position
-    },
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -45,8 +38,8 @@ const Section: React.FC<SectionProps> = ({
         variants={variants}
         initial="hidden"
         animate={controls}
-        transition={{ duration: 0.6 }} // Adjust duration as needed
-        className={`w-[100%] h-[100%] bg-background-light rounded-md ${innerClassName}`}
+        transition={{ duration: 0.6 }}
+        className={`w-[100%] h-[100%] rounded-md ${innerClassName}`}
       >
         {children}
       </motion.div>
