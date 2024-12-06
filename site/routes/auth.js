@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const AWS = require('aws-sdk');
 const User = require('../models/user');
+const strategy = require('../passport');
 
 // Configure AWS SDK
 AWS.config.update({
@@ -36,24 +37,28 @@ const createAuthRouter = (redisClient) => {
       const token = crypto.randomBytes(16).toString('hex');
 
       // Store token in Redis for 15 minutes
-      await redisClient.setEx(token, 60 * 15, email);
+      await redisClient.set("login:"+token, email);
+      console.log("token", token);
+      console.log("email", email);
+      await redisClient.expire("login:"+token, 900);
 
       // Send email
+      let authLink = `http://localhost:3000/api/auth/${token}`;
       const mailOptions = {
         from: 'test@darchai.com', // Verified SES email address
         to: email,
         subject: 'Your Magic Login Link',
-        text: `Please use this link to log in: http://localhost:5173/api/auth/${token}`,
+        text: `Please use this link to log in: ${authLink}`,
         html: `
           <div style="font-family: Arial, sans-serif; color: #333;">
             <h1>Welcome to Our Service!</h1>
             <p>We're excited to have you on board. Please use the button below to log in:</p>
-            <a href="http://localhost:5173/api/auth/${token}" 
+            <a href="${authLink}" 
                style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
               Log In Now
             </a>
             <p>If the button doesn't work, copy and paste this link into your browser:</p>
-            <p>http://localhost:5173/api/auth/${token}</p>
+            <p>${authLink}</p>
           </div>
         `,
       };
@@ -71,11 +76,12 @@ const createAuthRouter = (redisClient) => {
 
   // Auth Route
   router.get('/auth/:token', async (req, res) => {
+    console.log("autch route");
     const token = req.params.token;
 
     try {
       // Check token in Redis
-      const email = await redisClient.get(token);
+      const email = await redisClient.get("login:"+token);
 
       if (!email) {
         return res.status(400).send('Invalid or expired token.');
@@ -83,13 +89,37 @@ const createAuthRouter = (redisClient) => {
       await redisClient.del(token);
       
       // Create a new user or update the existing one
-      
+      let user = await User.findOneAndUpdate({email}, {email});
+      if (!user) {
+        user = new User({
+          email
+        });
+        await user.save();
+
+      }
+
+      strategy.authenticate('magiclink', { email }, (err, user) => {
+        if (err) {
+          console.error('Error during authentication:', err);
+          return res.status(500).send('Authentication failed.');
+        }
+
+        req.login(user, (err) => {
+          if (err) {
+            console.error('Error during login:', err);
+            return res.status(500).send('Login failed.');
+          }
+
+          res.status(200).send('Authentication successful!');
+        });
+      });
 
       res.status(200).send('Authentication successful!');
     } catch (err) {
       console.error('Error during authentication:', err);
       res.status(500).send('Authentication failed.');
     }
+    res.redirect('/');
   });
 
   return router;

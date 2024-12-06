@@ -4,20 +4,14 @@ const { Schema } = mongoose;
 // Define the User schema
 const userSchema = new Schema(
   {
-    id: {
-      type: String,
-      required: true,
-      unique: true, // Ensure ID is unique
-    },
     email: {
       type: String,
       required: true,
       unique: true, // Prevent duplicate emails
       lowercase: true, // Ensure email is stored in lowercase
       match: [
-        /^\S+@\S+\.\S+$/,
-        'Please provide a valid email address',
-      ], // Basic email validation
+        /^\S+@\S+\.\S+$/
+      ]
     },
     createdAt: {
       type: Date,
