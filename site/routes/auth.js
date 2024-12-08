@@ -3,7 +3,6 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const AWS = require('aws-sdk');
 const User = require('../models/user');
-const strategy = require('../passport');
 
 // Configure AWS SDK
 AWS.config.update({
@@ -76,50 +75,36 @@ const createAuthRouter = (redisClient) => {
 
   // Auth Route
   router.get('/auth/:token', async (req, res) => {
-    console.log("autch route");
     const token = req.params.token;
 
     try {
       // Check token in Redis
-      const email = await redisClient.get("login:"+token);
-
+      const email = await redisClient.get("login:" + token);
       if (!email) {
         return res.status(400).send('Invalid or expired token.');
       }
-      await redisClient.del(token);
+      await redisClient.del("login:" + token);
       
-      // Create a new user or update the existing one
-      let user = await User.findOneAndUpdate({email}, {email});
+      // Find or create the user
+      let user = await User.findOne({ email });
       if (!user) {
-        user = new User({
-          email
-        });
+        user = new User({ email });
         await user.save();
-
       }
-
-      strategy.authenticate('magiclink', { email }, (err, user) => {
+      
+      // At this point, we have a valid user who should be logged in
+      req.logIn(user, (err) => {
         if (err) {
-          console.error('Error during authentication:', err);
-          return res.status(500).send('Authentication failed.');
+          console.error('Error during login:', err);
+          return res.status(500).send('Login failed.');
         }
-
-        req.login(user, (err) => {
-          if (err) {
-            console.error('Error during login:', err);
-            return res.status(500).send('Login failed.');
-          }
-
-          res.status(200).send('Authentication successful!');
-        });
+        // User is now logged in and session is established
+        res.status(200).send('Login successful!');
       });
-
-      res.status(200).send('Authentication successful!');
     } catch (err) {
       console.error('Error during authentication:', err);
       res.status(500).send('Authentication failed.');
     }
-    res.redirect('/');
   });
 
   return router;

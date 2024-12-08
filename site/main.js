@@ -2,7 +2,7 @@ const express = require('express');
 const rd = require('redis');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const passport = require('./passport'); // Import configured Passport
+const passport = require('passport');
 const { RedisStore } = require('connect-redis');
 
 const app = express();
@@ -53,6 +53,21 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+const User = require('./models/user');
+passport.deserializeUser(async (id, done) => {
+  try {
+    let user = User.findById(id);
+    done(null, user);
+  }
+  catch (err) {
+    done(err, null);
+  }
+});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -113,4 +128,3 @@ redisProcess.on('connect', () => {
 
   processTasks();
 });
-

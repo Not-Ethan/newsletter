@@ -16,12 +16,12 @@ module.exports = new Strategy(async (req, done) => {
     return done(null, false, { message: 'Token is required' });
   }
 
-  const id = await redisClient.get(`magiclink:${token}`);
+  const id = await redisClient.get(`login:${token}`);
 
   if (!id) {
     return done(null, false, { message: 'Invalid or expired token' });
   }
 
   await redisClient.del(`magiclink:${token}`);
-  return done(null, { email });
+  return done(null, { id });
 });

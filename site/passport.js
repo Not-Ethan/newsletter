@@ -9,9 +9,10 @@ passport.serializeUser((user, done) => {
     done(null, user.id); // Store id in session
 });
 
-passport.deserializeUser((email, done) => {
-    
-    done(null, user);
+passport.deserializeUser((id, done) => {
+    User.findById(id, (err, user) => {
+        done(err, user);
+    });
 });
 
 module.exports = passport;
