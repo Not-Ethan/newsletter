@@ -49,7 +49,8 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 60 * 60 * 1000 }
+  cookie: { maxAge: 60 * 60 * 1000 },
+  name: 'session',
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -76,8 +77,14 @@ app.use(express.json());
 const transcriptionRoutes = require('./routes/transcription')(redisSubmit);
 const authRoutes = require('./routes/auth')(sessionClient);
 
-app.use('/api', transcriptionRoutes);
 app.use('/api', authRoutes);
+app.use((req, res, next) => {
+  if(!req.isAuthenticated()) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  next();
+});
+app.use('/api', transcriptionRoutes);
 
 // Start the server
 app.listen(port, () => {
