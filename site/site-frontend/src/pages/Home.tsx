@@ -13,16 +13,34 @@ function Home() {
         <Navbar />
       </div>
 
-      {/* Section 1 */}
+     {/* Section 1 */}
       <Section innerClassName="flex flex-col">
         <div className="text-center mx-10 flex grow flex-col justify-center items-center">
-          <h1 className="text-8xl font-semibold font-serif text-primary">Welcome to Newsletta</h1>
-          <h2 className="text-3xl font-thin font-serif text-primary my-2 max-w-3xl">
-            Transform your video and podcast content into shareable newsletters with ease!
-          </h2>
-          <button className="bg-transparent border-2 border-primary text-primary font-light font-serif text-xl px-6 py-2 rounded-lg mt-7">
-            Get Started
-          </button>
+          <div className="w-full flex justify-between items-center mb-10">
+            <div className="text-left">
+              <h1 className="text-5xl font-bold font-sans text-primary">
+                Your Content <br /> Their Email
+              </h1>
+              <h2 className="text-8xl font-semibold font-serif text-primary my-5">
+                No Effort Required
+              </h2>
+              <p className="text-lg font-light font-serif text-primary max-w-lg">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dapibus lacus et fermentum amet blandit.
+              </p>
+              <button className="bg-transparent border-2 border-primary text-primary font-light font-serif text-xl px-6 py-2 rounded-lg mt-7">
+                Get Started
+              </button>
+            </div>
+            <div className="w-[300px] h-[300px] border rounded-lg flex justify-center items-center">
+              <span>Image Placeholder</span>
+            </div>
+          </div>
+          <div className="absolute left-[300px] top-[150px] w-[100px] h-[50px] border rounded-lg flex justify-center items-center">
+            <span>Arrow Placeholder</span>
+          </div>
+          <div className="absolute bottom-0 right-0 w-[300px] h-[300px] border rounded-lg flex justify-center items-center">
+            <span>Gear Placeholder</span>
+          </div>
         </div>
       </Section>
 
