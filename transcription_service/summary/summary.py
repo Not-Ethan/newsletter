@@ -127,7 +127,7 @@ def main(text=None,file=TRANSCRIPTION_FILE):
             # Clean delimiters and convert to Markdown
             cleaned_json = clean_delimiter(key_points_json)
             markdown = json_to_markdown(cleaned_json)
-            logging.info("Markdown generation complete.")
+            
         else:
             logging.error("Failed to generate key points.")
             return None
