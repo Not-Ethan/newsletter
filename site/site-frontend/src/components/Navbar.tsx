@@ -1,17 +1,22 @@
 import { useState, useEffect } from "react";
 
-// Helper function to check if the "session" cookie exists
-const isSessionCookieSet = () => {
-  return document.cookie.split("; ").some((cookie) => cookie.startsWith("session="));
-};
-
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check for the session cookie on mount
-    setIsAuthenticated(isSessionCookieSet());
+    // Check authentication status
+    fetch('/api/session/', {
+      method: 'GET',
+      credentials: 'include', // Include cookies with the request
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setIsAuthenticated(data.isAuthenticated); // Update state based on the server response
+      })
+      .catch((error) => {
+        console.error('Error fetching session status:', error);
+      });
   }, []);
 
   const navItems = ["Home", "Features", "Pricing", "About", "Contact"];
