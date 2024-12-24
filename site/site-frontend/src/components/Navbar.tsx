@@ -12,9 +12,9 @@ function Navbar() {
         <img
           src="Cura_processed.png"
           alt="Logo"
-          className="w-8 h-8 rounded-full"
+          className="w-10 h-10 rounded-full"
         />
-        <span className="text-lg font-bold text-black">Newsletta</span>
+        <span className="text-2xl font-bold text-black">Newsletta</span>
       </a>
 
       {/* Desktop Nav Links (center) and Buttons (right) */}
