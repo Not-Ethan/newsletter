@@ -4,9 +4,18 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
 const { RedisStore } = require('connect-redis');
+const cors = require('cors');
 
 const app = express();
 const port = 3000;
+
+// Allow requests from your frontend (Vite dev server)
+const corsOptions = {
+  origin: 'http://localhost:5173', // Frontend URL
+  credentials: true,              // Allow credentials (cookies)
+};
+
+app.use(cors(corsOptions)); // Add CORS middleware
 
 // Redis clients for submitting and processing tasks
 const redisSubmit = rd.createClient({
@@ -49,7 +58,12 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 60 * 60 * 1000 },
+  cookie: {
+    maxAge: 60 * 60 * 1000, // 1 hour
+    httpOnly: true,         // Prevent client-side JS access
+    secure: false,          // Set to true if using HTTPS
+    sameSite: 'lax',        // Protect against CSRF
+  },
   name: 'session',
 }));
 app.use(passport.initialize());
@@ -62,7 +76,7 @@ passport.serializeUser((user, done) => {
 const User = require('./models/user');
 passport.deserializeUser(async (id, done) => {
   try {
-    let user = User.findById(id);
+    let user = await User.findById(id);
     done(null, user);
   }
   catch (err) {

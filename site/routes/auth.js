@@ -63,7 +63,7 @@ const createAuthRouter = (redisClient) => {
   });
 
   // Auth Route
-  router.get('/auth/:token', async (req, res) => {
+  router.get('/auth/:token', async (req, res) => {  
     const token = req.params.token;
 
     try {
@@ -98,6 +98,15 @@ const createAuthRouter = (redisClient) => {
     }
   });
 
+  router.get('/session/', (req, res) => {
+    if (req.isAuthenticated()) {
+      console.log("req.user", req.user);
+
+      return res.json({ isAuthenticated: true, user: req.user });
+    }
+    res.json({ isAuthenticated: false });
+  });
+
   return router;
 };
 
@@ -106,5 +115,6 @@ function verifyEmail(email) {
   email = email.trim();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
 
 module.exports = createAuthRouter;
