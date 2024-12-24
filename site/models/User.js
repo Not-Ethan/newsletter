@@ -25,6 +25,10 @@ const userSchema = new Schema(
       type: [String],
       default: [], // Default to empty array
     },
+    tasks: {
+      type: [Schema.Types.ObjectId],
+      ref: 'Task'
+    }
   },
   {
     timestamps: true, // Automatically manage createdAt and updatedAt
