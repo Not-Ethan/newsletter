@@ -73,7 +73,7 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-const User = require('./models/user');
+const User = require('./models/User');
 passport.deserializeUser(async (id, done) => {
   try {
     let user = await User.findById(id);
@@ -91,13 +91,15 @@ app.use(express.json());
 const transcriptionRoutes = require('./routes/transcription')(redisSubmit);
 const authRoutes = require('./routes/auth')(sessionClient);
 
-app.use('/api', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use((req, res, next) => {
-  if(!req.isAuthenticated()) {
+  if(!req.user) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
+  console.log(req.user)
   next();
 });
+
 app.use('/api', transcriptionRoutes);
 
 // Start the server

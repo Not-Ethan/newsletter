@@ -1,6 +1,6 @@
 const express = require('express');
 const crypto = require('crypto');
-const User = require('../models/user');
+const User = require('../models/User');
 const formData = require('form-data');
 const Mailgun = require('mailgun.js');
 const mailgun = new Mailgun(formData);
@@ -29,7 +29,7 @@ const createAuthRouter = (redisClient) => {
       await redisClient.expire("login:" + token, 900);
 
       // Generate magic link
-      const authLink = `http://localhost:3000/api/auth/${token}`;
+      const authLink = `http://localhost:3000/api/auth/v/${token}`;
 
       // Send email using Mailgun
       const mailOptions = {
@@ -63,7 +63,7 @@ const createAuthRouter = (redisClient) => {
   });
 
   // Auth Route
-  router.get('/auth/:token', async (req, res) => {  
+  router.get('/auth/v/:token', async (req, res) => {  
     const token = req.params.token;
 
     try {
