@@ -56,6 +56,10 @@ module.exports = (redisSubmit) => {
 
     res.send(summary);
   });
+  // Endpoint to get the summary of a task
+  router.get('/completed', async (req, res) => {
+    
+  });
 
   return router;
 };
