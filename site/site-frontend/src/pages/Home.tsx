@@ -23,7 +23,7 @@ function Home() {
                 Your Content <br /> Their Email
               </h1>
               <h2 className="text-9xl font-semibold font-sans text-primary my-8">
-                No Effort Required
+                No Effort Required.
               </h2>
               <p className="text-xl font-light font-serif text-primary max-w-lg">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dapibus lacus et fermentum amet blandit.
@@ -34,19 +34,31 @@ function Home() {
             </div>
 
             {/* Image Placeholder repositioned */}
-            <div className="absolute top-[30%] right-[5%] transform -translate-y-1/2 w-[350px] h-[350px] border rounded-lg flex justify-center items-center">
-              <span>Image Placeholder</span>
+            <div className="absolute top-[30%] right-[5%] transform -translate-y-1/2 w-[350px] h-[350px] rounded-lg flex justify-center items-center">
+              <img
+                src="persononcomputer.svg"
+                alt="person"
+                className="w-200 h-200"
+              />
             </div>
 
             {/* Arrow */}
-            <div className="absolute left-[500px] top-[20%] transform -translate-y-1/2 w-[100px] h-[50px] border rounded-lg flex justify-center items-center">
-              <span>Arrow Placeholder</span>
+            <div className="absolute left-[500px] top-[20%] transform -translate-y-1/2 w-[200px] h-[100px] rounded-lg flex justify-center items-center">
+              <img
+                src="curve-arrow-down.svg"
+                alt="arrow"
+                className="w-80 h-80 rounded-full"
+              />
             </div>
           </div>
 
           {/* Gears Placeholder */}
-          <div className="absolute bottom-0 right-0 w-[300px] h-[300px] border rounded-lg flex justify-center items-center">
-            <span>Gear Placeholder</span>
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-lg flex justify-center items-center">
+            <img
+              src="gear-svgrepo-com.svg"
+              alt="gear"
+              className="w-200 h-200 rounded-full translate-x-[50%] translate-y-[50%]"
+            />
           </div>
         </div>
       </Section>
