@@ -33,15 +33,6 @@ function Home() {
               </button>
             </div>
 
-            {/* Image Placeholder repositioned */}
-            <div className="absolute top-[30%] right-[5%] transform -translate-y-1/2 w-[350px] h-[350px] rounded-lg flex justify-center items-center">
-              <img
-                src="persononcomputer.svg"
-                alt="person"
-                className="w-200 h-200"
-              />
-            </div>
-
             {/* Arrow */}
             <div className="absolute left-[500px] top-[20%] transform -translate-y-1/2 w-[200px] h-[100px] rounded-lg flex justify-center items-center">
               <img
@@ -52,12 +43,12 @@ function Home() {
             </div>
           </div>
 
-          {/* Gears Placeholder */}
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-lg flex justify-center items-center">
+          {/* Full-Screen Gear SVG */}
+          <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-0">
             <img
-              src="gear-svgrepo-com.svg"
+              src="Allgears.svg"
               alt="gear"
-              className="w-200 h-200 rounded-full translate-x-[50%] translate-y-[50%]"
+              className="w-100% h-90%"
             />
           </div>
         </div>

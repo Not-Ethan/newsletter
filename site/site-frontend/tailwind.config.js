@@ -21,11 +21,11 @@ export default {
           dark: '#203A43',  // Same for both modes
         },
         gradientEnd: {
-          light: '#FA8072', // Light mode end color
+          light: '#C8E8FC', // Light mode end color
           dark: '#2C5364',  // Dark mode end color
         },
         // Primary and Secondary Colors
-        primary: '#FA8072',
+        primary: '#C8E8FC',
         // Neutral Background Colors
         background: {
           light: '#f7f2ea',  // Light mode background
