@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 from tqdm import tqdm  # For the progress bar
 from faster_whisper import WhisperModel  # Faster Whisper
+from pydub import AudioSegment
+from pydub.utils import make_chunks
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -41,7 +43,7 @@ class WhisperTranscriber:
                 for segment in segments:
                     start, end, text = segment.start, segment.end, segment.text
                     transcription.append(text)
-                    # Update progress bar based on the end time of the segment
+                    # Update progress bar based on the end time of`` the segment
                     pbar.update(end - pbar.n)
 
             # Combine transcription text
@@ -54,6 +56,35 @@ class WhisperTranscriber:
             return transcription_text
         except Exception as e:
             logging.error(f"An error occurred during transcription: {e}")
+            return None
+
+    def transcribe_large_audio(audio_path, chunk_duration_ms=60000, output_text_file="transcription.txt"):
+        """
+        Transcribe large audio files by processing them in smaller chunks.
+        """
+        try:
+            audio = AudioSegment.from_file(audio_path)
+            chunks = make_chunks(audio, chunk_duration_ms)
+
+            transcription = []
+            for i, chunk in enumerate(chunks):
+                chunk_path = f"temp_chunk_{i}.wav"
+                chunk.export(chunk_path, format="wav")
+
+                # Transcribe the chunk
+                segment_transcription = transcriber.transcribe(chunk_path)
+                transcription.append(segment_transcription)
+
+                # Clean up the temporary file
+                Path(chunk_path).unlink()
+
+            # Combine transcriptions
+            full_transcription = "\n".join(transcription)
+            Path(output_text_file).write_text(full_transcription, encoding="utf-8")
+
+            return full_transcription
+        except Exception as e:
+            logging.error(f"Error processing large audio: {e}")
             return None
 
 # Global instance of the transcriber
@@ -111,6 +142,11 @@ def get_transcription(youtube_url: str, output_path: str = "audio", transcriptio
 
     if audio_file:
         # Transcribe downloaded audio using the global transcriber instance
+        # Check if the audio file is too long (greater than 90 minutes)
+        audio = AudioSegment.from_file(audio_file)
+        if len(audio) > 5400000:
+            return transcriber.transcribe_large_audio(audio_file, output_text_file=transcription_file)
+        
         return transcriber.transcribe(audio_file, output_text_file=transcription_file)
     return None
 
