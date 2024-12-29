@@ -55,7 +55,8 @@ const createAuthRouter = (redisClient) => {
       console.log('Email sent successfully:', response);
 
       // Respond to client
-      res.status(200).send('Magic link sent to your email!');
+      //TODO DELETE TOKEN FROM REPLY
+      res.send('Magic link sent to your email! '+authLink).status(200);
     } catch (err) {
       console.error('Error sending email:', err);
       res.status(500).send('Failed to send magic link.');
@@ -63,7 +64,7 @@ const createAuthRouter = (redisClient) => {
   });
 
   // Auth Route
-  router.get('/auth/v/:token', async (req, res) => {  
+  router.get('/v/:token', async (req, res) => {  
     const token = req.params.token;
 
     try {
