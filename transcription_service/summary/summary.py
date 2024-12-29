@@ -6,7 +6,7 @@ from openai import OpenAI
 from .markdown_converter import json_to_markdown
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Load environment variables
 load_dotenv("secrets.env")
