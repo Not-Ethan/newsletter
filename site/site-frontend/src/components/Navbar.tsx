@@ -6,7 +6,7 @@ function Navbar() {
 
   useEffect(() => {
     // Check authentication status
-    fetch('/api/session/', {
+    fetch('/api/auth/session/', {
       method: 'GET',
       credentials: 'include', // Include cookies with the request
     })
