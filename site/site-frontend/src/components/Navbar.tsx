@@ -14,7 +14,7 @@ function Navbar() {
           alt="Logo"
           className="w-10 h-10 rounded-full"
         />
-        <span className="text-2xl font-bold text-black">Newsletta</span>
+        <span className="text-2xl font-bold font-sans text-black">Newsletta</span>
       </a>
 
       {/* Desktop Nav Links (center) and Buttons (right) */}
@@ -23,7 +23,7 @@ function Navbar() {
           <a
             key={item}
             href={`/${item.toLowerCase()}`}
-            className="relative text-black hover:text-[#FCAEAE] transition-colors"
+            className="relative text-black font-sans hover:text-[#FCAEAE] transition-colors"
           >
             {item}
             <span className="absolute left-0 bottom-[-2px] w-full h-[2px] bg-[#FCAEAE] scale-x-0 transition-transform duration-300 transform origin-left hover:scale-x-100"></span>
@@ -34,13 +34,13 @@ function Navbar() {
       <div className="hidden lg:flex space-x-4">
         <a
           href="/login"
-          className="px-4 py-2 border border-[#FA8072] text-[#FA8072] rounded-full hover:bg-[#FA8072] hover:text-white transition"
+          className="px-4 py-2 border border-[#FA8072] text-[#FA8072] font-sans rounded-full hover:bg-[#FA8072] hover:text-white transition"
         >
           Log in
         </a>
         <a
           href="/get-started"
-          className="px-4 py-2 bg-[#FA8072] text-white rounded-full hover:bg-[#e67063] transition shadow-md"
+          className="px-4 py-2 bg-[#FA8072] text-white font-sans rounded-full hover:bg-[#e67063] transition shadow-md"
         >
           Get Started Now
         </a>

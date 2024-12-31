@@ -15,14 +15,14 @@ function Home() {
       </div>
 
       {/* Section 1 */}
-      <Section innerClassName="flex flex-col">
+      <Section innerClassName="flex flex-col mt-[5%]">
         <div className="text-center mx-10 flex grow flex-col justify-center items-center">
           <div className="w-full flex justify-between items-center mb-10 relative">
             <div className="text-left">
-              <h1 className="text-7xl font-bold font-sans text-primary leading-[5rem]">
-                Your Content <br /> Their Email
+              <h1 className="text-7xl font-bold font-sans text-primary leading-[5rem] mt-[-40px]">
+                  Your Content <br /> Their Email
               </h1>
-              <h2 className="text-9xl font-semibold font-sans text-primary my-8">
+              <h2 className="text-9xl font-bold font-sans text-primary my-8 leading-[13rem]">
                 No Effort Required.
               </h2>
               <p className="text-xl font-light font-serif text-primary max-w-lg">

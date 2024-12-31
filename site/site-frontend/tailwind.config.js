@@ -21,11 +21,11 @@ export default {
           dark: '#203A43',  // Same for both modes
         },
         gradientEnd: {
-          light: '#C8E8FC', // Light mode end color
+          light: '#FA8072', // Light mode end color
           dark: '#2C5364',  // Dark mode end color
         },
         // Primary and Secondary Colors
-        primary: '#C8E8FC',
+        primary: '#FA8072',
         // Neutral Background Colors
         background: {
           light: '#f7f2ea',  // Light mode background
@@ -39,8 +39,8 @@ export default {
         },
       },
       fontFamily: {
-        serif: ['Atkinson Hyperlegible', 'serif'], // Sans-serif fonts
-        sans: ['Proxima Nova', 'sans-serif'], // Sans-serif fonts
+        serif: ['Noto Serif', 'serif'], // Sans-serif fonts
+        sans: ['Open Sans', 'sans-serif'], // Sans-serif fonts
       },
       animation: {
         gradientBG: 'gradientBG 8s ease infinite', // Gradient animation
