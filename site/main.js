@@ -2,11 +2,20 @@ const express = require('express');
 const rd = require('redis');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const passport = require('./passport'); // Import configured Passport
+const passport = require('passport');
 const { RedisStore } = require('connect-redis');
+const cors = require('cors');
 
 const app = express();
 const port = 3000;
+
+// Allow requests from your frontend (Vite dev server)
+const corsOptions = {
+  origin: 'http://localhost:5173', // Frontend URL
+  credentials: true,              // Allow credentials (cookies)
+};
+
+app.use(cors(corsOptions)); // Add CORS middleware
 
 // Redis clients for submitting and processing tasks
 const redisSubmit = rd.createClient({
@@ -49,10 +58,31 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 60 * 60 * 1000 }
+  cookie: {
+    maxAge: 60 * 60 * 1000, // 1 hour
+    httpOnly: true,         // Prevent client-side JS access
+    secure: false,          // Set to true if using HTTPS
+    sameSite: 'lax',        // Protect against CSRF
+  },
+  name: 'session',
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+const User = require('./models/User');
+passport.deserializeUser(async (id, done) => {
+  try {
+    let user = await User.findById(id);
+    done(null, user);
+  }
+  catch (err) {
+    done(err, null);
+  }
+});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -61,8 +91,16 @@ app.use(express.json());
 const transcriptionRoutes = require('./routes/transcription')(redisSubmit);
 const authRoutes = require('./routes/auth')(sessionClient);
 
+app.use('/api/auth', authRoutes);
+app.use((req, res, next) => {
+  if(!req.user) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  console.log(req.user)
+  next();
+});
+
 app.use('/api', transcriptionRoutes);
-app.use('/api', authRoutes);
 
 // Start the server
 app.listen(port, () => {
@@ -113,4 +151,3 @@ redisProcess.on('connect', () => {
 
   processTasks();
 });
-

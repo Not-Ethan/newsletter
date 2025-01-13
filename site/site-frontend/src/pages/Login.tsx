@@ -9,7 +9,7 @@ const MagicLinkLogin: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -17,6 +17,8 @@ const MagicLinkLogin: React.FC = () => {
 
       if (response.ok) {
         setResponseMessage("Magic link sent! Please check your email.");
+        let data = await response.text();
+        console.log(data)
         setIsSuccess(true);
       } else {
         setResponseMessage("Something went wrong. Please try again.");
@@ -24,6 +26,7 @@ const MagicLinkLogin: React.FC = () => {
       }
     } catch (error) {
       setResponseMessage("Network error. Please try again.");
+      console.error(error);
       setIsSuccess(false);
     }
   };
