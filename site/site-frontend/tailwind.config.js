@@ -39,8 +39,8 @@ export default {
         },
       },
       fontFamily: {
-        serif: ['Atkinson Hyperlegible', 'serif'], // Sans-serif fonts
-        sans: ['Proxima Nova', 'sans-serif'], // Sans-serif fonts
+        serif: ['Noto Serif', 'serif'], // Sans-serif fonts
+        sans: ['Open Sans', 'sans-serif'], // Sans-serif fonts
       },
       animation: {
         gradientBG: 'gradientBG 8s ease infinite', // Gradient animation
