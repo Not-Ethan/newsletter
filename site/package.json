@@ -11,12 +11,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "aws-sdk": "^2.1692.0",
     "connect-redis": "^8.0.0",
+    "cors": "^2.8.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
+    "mailgun.js": "^10.2.4",
     "mongoose": "^8.8.3",
-    "nodemailer": "^6.9.16",
     "passport": "^0.7.0",
     "passport-strategy": "^1.0.0",
     "redis": "^4.7.0"

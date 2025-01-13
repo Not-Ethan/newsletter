@@ -1,17 +1,16 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Navbar from "../components/Navbar";
 import InteractiveBlob from "../components/InteractiveBlob";
 
 const Dashboard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault(); // Prevent default form submission
-  
     const formData = new FormData(e.currentTarget);
     const payload: Record<string, string> = {};
     formData.forEach((value, key) => {
       payload[key] = value.toString();
     });
-  
+
     try {
       const response = await fetch('/api/transcribe', {
         method: 'POST',
@@ -27,7 +26,21 @@ const Dashboard: React.FC = () => {
       console.error('Error submitting form:', error);
     }
   };
+  const [loading, setLoading] = useState(true); // State for loading status for tasks
+  const [tasks, setTasks] = useState<any[]>([]); // State to hold user data
 
+  async function fetchTasks() {
+    console.log("fettingcking tasks")
+    const response = await fetch('/api/summary/all');
+    const data = (await response.json()).tasks;
+
+    setTasks(data);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchTasks();
+  })
   return (
     <div className="relative h-screen bg-background-light overflow-hidden overscroll-none">
       {/* Interactive Gradient Blobs */}
@@ -67,7 +80,7 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 pointer-events-auto">
           {/* Card 1 with Form */}
           <div className="p-4 bg-white shadow rounded">
-            <h3 className="text-lg font-bold">Card 1</h3>
+            <h3 className="text-lg font-bold">Submit New Task</h3>
             <form onSubmit={handleSubmit} action="/api/transcribe" method="POST" className="mt-4">
               <div className="mb-4">
                 <label htmlFor="YoutubeURL" className="block text-sm font-medium text-gray-700">
@@ -91,13 +104,8 @@ const Dashboard: React.FC = () => {
           </div>
           {/* Card 2 */}
           <div className="p-4 bg-white shadow rounded">
-            <h3 className="text-lg font-bold">Card 2</h3>
-            <p>Some information for card 2.</p>
-          </div>
-          {/* Card 3 */}
-          <div className="p-4 bg-white shadow rounded">
-            <h3 className="text-lg font-bold">Card 3</h3>
-            <p>Some information for card 3.</p>
+            <h3 className="text-lg font-bold">View Previous Tasks</h3>
+            <a href="/tasks">anc</a>
           </div>
         </div>
       </main>
