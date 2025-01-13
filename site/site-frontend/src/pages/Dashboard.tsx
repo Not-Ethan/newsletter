@@ -105,7 +105,9 @@ const Dashboard: React.FC = () => {
           {/* Card 2 */}
           <div className="p-4 bg-white shadow rounded">
             <h3 className="text-lg font-bold">View Previous Tasks</h3>
-            <a href="/tasks">anc</a>
+            <a href="/tasks">
+              {(loading) ? <p>Loading...</p> : tasks.map((task) => (<p>{JSON.parse(task.content).markdown}</p>))}
+            </a>
           </div>
         </div>
       </main>
