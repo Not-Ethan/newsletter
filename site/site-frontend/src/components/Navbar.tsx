@@ -18,8 +18,16 @@ function Navbar() {
         console.error('Error fetching session status:', error);
       });
   }, []);
+  class NavItem {
+    name: string;
+    link: string;
+    constructor(name: string, link: string) {
+      this.name = name;
+      this.link = link;
+    }
+  }
 
-  const navItems = ["Home", "Features", "Pricing", "About", "Contact"];
+  const navItems: NavItem[] = [new NavItem("Home", "/"), new NavItem("Dashboard", "/dashboard"), new NavItem("Features", "/features"), new NavItem("Pricing", "/pricing"), new NavItem("About", "/about"), new NavItem("Contact", "/contact")];
 
   return (
     <nav className="relative flex items-center justify-between px-8 h-16 bg-white shadow-md font-sans">
@@ -37,11 +45,11 @@ function Navbar() {
       <div className="hidden lg:flex items-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
         {navItems.map((item) => (
           <a
-            key={item}
-            href={`/${item.toLowerCase()}`}
+            key={item.name}
+            href={`${item.link}`}
             className="relative text-black hover:text-[#FCAEAE] transition-colors"
           >
-            {item}
+            {item.name}
             <span className="absolute left-0 bottom-[-2px] w-full h-[2px] bg-[#FCAEAE] scale-x-0 transition-transform duration-300 transform origin-left hover:scale-x-100"></span>
           </a>
         ))}
@@ -91,11 +99,11 @@ function Navbar() {
         <div className="absolute top-full right-8 mt-2 w-48 bg-white border shadow-md rounded-md flex flex-col lg:hidden">
           {navItems.map((item) => (
             <a
-              key={item}
-              href={`/${item.toLowerCase()}`}
+              key={item.name}
+              href={`/${item.link}`}
               className="px-4 py-2 text-black hover:bg-gray-100 hover:text-[#FCAEAE] transition-colors"
             >
-              {item}
+              {item.name}
             </a>
           ))}
           {/* Mobile Buttons: Only show if not authenticated */}
